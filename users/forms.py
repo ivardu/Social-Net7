@@ -11,8 +11,8 @@ class SignUpForm(UserCreationForm):
 		fields = ['email']
 
 
-class LoginForm(forms.ModelForm):
-	password = forms.CharField(label='Password', widget=forms.PasswordInput({'placeholder':''}))
-	class Meta:
-		model = SnetUser
-		fields = ['email', 'password']
+# class LoginForm(forms.ModelForm):
+# 	password = forms.CharField(label='Password', widget=forms.PasswordInput({'placeholder':''}))
+# 	class Meta:
+# 		model = SnetUser
+# 		fields = ['email', 'password']

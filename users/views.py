@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.edit import CreateView
-from users.forms import SignUpForm, LoginForm
+from users.forms import SignUpForm
 
 
 class SignUpView(CreateView):
@@ -9,7 +9,7 @@ class SignUpView(CreateView):
 	template_name = 'users/signup.html'
 
 
-class LoginView(CreateView):
+# class LoginView(CreateView):
 
-	form_class = LoginForm
-	template_name = 'users/login.html'
+# 	form_class = LoginForm
+# 	template_name = 'users/login.html'

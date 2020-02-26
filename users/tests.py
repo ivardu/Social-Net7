@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse, resolve
 from users.models import SnetUser
 from users.views import SignUpView
+from users.forms import SignUpForm
 from model_bakery import baker
 
 User = get_user_model()
@@ -89,10 +90,44 @@ class UsersURLSTest(TestCase):
 		register_url = reverse('register')
 		self.assertEqual(register_url, '/')
 
-		response = self.client.get('/')
-		self.assertEqual(response.status_code, 200)
-
-		# self.assertTrue('email' in response.context)
+		reg_response = self.client.get('/')
+		self.assertEqual(reg_response.status_code, 200)
 		# print(response.context)
+		# self.assertTrue('email' in response.context['email'])
+
 		login_url = reverse('login')
-		self.assertEqual(login_url, '/login/')
+		self.assertEqual(login_url,'/login/')
+
+		log_response = self.client.get('/login/')
+		self.assertEqual(log_response.status_code, 200)
+
+
+
+
+
+class UsersFormsTest(TestCase):
+
+	def setUp(self):
+		self.data = {
+			'email':'123@gmail.com',
+			'password1':'Testing@123',
+			'password2':'Testing@123',
+		}
+		self.login_data = baker.make('SnetUser')
+		
+
+	def test_signup(self):
+		form = SignUpForm(data=self.data)
+		# self.fail(form.as_p())
+		self.assertTrue(form.is_valid())
+
+	# def test_login(self):
+	# 	# print(self.login_data.__dict__)
+	# 	form = LoginForm(data=self.login_data.__dict__)
+	# 	self.fail(form.as_p()) 
+	# 	# print(form.errors)
+	# 	self.assertTrue(form.is_valid())
+		
+
+		
+
