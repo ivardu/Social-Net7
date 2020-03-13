@@ -16,6 +16,9 @@
 		.vertical_line{
 			border-left:thick solid#D3D3D3;
 		}
+		body{
+			background-image: url('{% static "components/bground.png" %}');
+		}
 	</style>
 </head>
 <body>
@@ -43,7 +46,7 @@
 				</form>
 			</div>
 			<div class="shadow-lg border rounded mt-2 p-3" align="center">
-				<span>Already has an account..? <a class="btn-link" href="">Login</a></span>
+				<span>Already has an account..? <a class="btn-link" href="{% url 'login' %}">Login</a></span>
 			</div>
 		</div>
 		{% endblock sub_page %}

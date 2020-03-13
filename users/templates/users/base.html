@@ -13,6 +13,7 @@
 		<nav class="navbar navbar-expand-md navbar-dark bg-dark">
 		 	<a class="navbar-brand" href="#">Social Net7</a>
 			<div class="collapse navbar-collapse" id="navbarText">
+			{% if user.is_authenticated %}	
 			    <ul class="navbar-nav mr-auto">
 			      <li class="nav-item active">
 			        <a class="nav-link text-white" href="#">Feed</a>
@@ -34,9 +35,20 @@
 			    		<a class="nav-link text-white" href=""><span class="btn btn-sm btn-success">Profile</span></a>
 				    </li>
 				    <li class="navbar-nav ml-auto">
-				    	<a class="nav-link text-white" href=""><span class="btn btn-sm btn-danger">LogOut</span></a>
+				    	<a class="nav-link text-white" href="{% url 'logout' %}"><span class="btn btn-sm btn-danger">LogOut</span></a>
 				    </li>
 			    </ul>
+			   {% else %}
+			   	<ul class="navbar-nav ml-auto">
+			    	<li class="nav-item">
+			    		<a class="nav-link text-white" href="{% url 'login' %}"><span class="btn btn-sm btn-success">Login</span></a>
+				    </li>
+				    <li class="navbar-nav ml-auto">
+				    	<a class="nav-link text-white" href="{% url 'register' %}"><span class="btn btn-sm btn-danger">SignUp</span></a>
+				    </li>
+			    </ul>
+
+			   {% endif %}
 			</div>
 		</nav>
 		

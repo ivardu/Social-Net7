@@ -1,0 +1,16 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+{% block body %}
+<div class="container shadow-lg mt-2 p-3">
+	{% if messages %}
+		{% for message in messages %}
+		<span>{{message}}</span>
+		{% endfor %}
+	{% endif %}
+	<form method="post" enctype="mulitpart/form-data">
+		{{form|crispy}}
+		<input type="submit" name="submit" value="Update">
+	</form>
+	
+</div>
+{% endblock body %}
