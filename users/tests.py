@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 from users.models import SnetUser, Profile, profile_img_directory
 from users.views import SignUpView
-from users.forms import SignUpForm, ProfileUpdateForm
+from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm
 from model_bakery import baker
 from unittest.mock import patch
 from users.signals import create_profile
@@ -212,6 +212,8 @@ class UsersFormsTest(TestCase):
 			'email':'123@gmail.com',
 			'password1':'Testing@123',
 			'password2':'Testing@123',
+			'first_name':'Ravi',
+			'last_name':'Kumar'
 		}
 
 	def test_signup_form_has_fields(self):
@@ -227,6 +229,22 @@ class UsersFormsTest(TestCase):
 	def test_signup_form_is_invalid(self):
 		form=SignUpForm(data={})
 		self.assertFalse(form.is_valid())
+
+	def test_user_update_form(self):
+		form = UserUpdateForm()
+		self.assertTrue(form)
+
+	def test_user_update_with_valid_data(self):
+		form = UserUpdateForm(data=self.data)
+		self.assertTrue(form.is_valid())
+		form_obj = form.save()
+		self.assertEqual(form_obj.first_name, SnetUser.objects.get(last_name='Kumar').first_name)
+
+	def test_user_update_with_invalid_data(self):
+		self.data.update(first_name='', last_name='')
+		form = UserUpdateForm(data=self.data)
+		# Still the below form passes as the first_name and last_name fields are optional
+		self.assertTrue(form.is_valid())
 
 
 
@@ -255,22 +273,19 @@ class UserProfileTest(TestCase):
 			'image':self.user.profile.image,
 			'user':self.user.id
 		}
-		form = ProfileUpdateForm(data=data)
-		# Profile with user already exists so it will fail
-		self.assertFalse(form.is_valid())
+		# if instance is not supplied will throw "Profile with user already exists" error so it will fail
+		# print(self.user)
+		form = ProfileUpdateForm(data=data, instance=self.user.profile)
+		# print(form)
+		self.assertTrue(form.is_valid())
+		form_obj = form.save()
+		self.assertIsInstance(form_obj, Profile)
 
 	def test_profile_form_invalid(self):
 		form = ProfileUpdateForm(data={})
+		# print(form.errors)
 		self.assertTrue(form.errors)
-
-	def test_profile_form_update_with_new_image(self):
-		image = SimpleUploadedFile(name='plus.png', content=open((os.path.join(settings.BASE_DIR, 'plus.png')),'rb').read())
-		
-		resp = self.client.post(reverse('profile'), {'image':image, 'user':self.new_user.id, 'dob':'19/02/1991'}, follow=True)
-		self.assertFalse(resp.context.get('form').errors)
-		message = list(resp.context.get('messages'))[0]
-		self.assertContains(resp, 'Successfully')
-		self.assertTrue('Successfully' in message.message)
+		self.assertFalse(form.is_valid())
 
 	# Profile URL, View Mapping and Correct Template rendering test 
 
@@ -296,6 +311,26 @@ class UserProfileTest(TestCase):
 
 	def test_profile_data_saved_or_not(self):
 		self.assertEqual(self.user.profile.image, 'female.jpg')
+
+
+	def test_profile_resp_data(self):
+		# print(self.profile_resp.context.get())
+		self.assertContains(self.profile_resp, 'first_name')
+		self.assertContains(self.profile_resp, 'last_name')
+
+	# Testing the UserUpdateForm as ProfileUpdateForm both are embeded in same page
+
+	def test_user_update_form(self):
+		data = {
+			'email':self.user.email,
+			'first_name':'Ravi',
+			'last_name'	:'Kumar'
+		}
+
+		form = UserUpdateForm(data=data, instance=self.user)
+		# print(form.errors)
+		self.assertTrue(form.is_valid())
+
 
 
 

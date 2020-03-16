@@ -3,7 +3,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.edit import FormView, CreateView
 # from django.contrib.auth.views import UserCreation
-from users.forms import SignUpForm, ProfileUpdateForm
+from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm
 from users.models import SnetUser
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -28,12 +28,16 @@ class SignUpView(CreateView):
 def profile(request):
 	if request.method == 'POST':
 		# print(request.user.profile)
-		form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-		if form.is_valid():
-			form.save()
+		profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+		user_form = UserUpdateForm(request.POST, instance=request.user)
+		if profile_form.is_valid() and user_form.is_valid():
+			profile_form.save()
+			user_form.save()
 			messages.success(request, f'Successfully updated profile')
 			return HttpResponseRedirect(reverse('profile'))
 	else:
-		form = ProfileUpdateForm()
+		profile_form = ProfileUpdateForm(instance=request.user.profile)
+		user_form = UserUpdateForm(instance=request.user)
+
 
 	return render(request, 'users/profile.html', locals())

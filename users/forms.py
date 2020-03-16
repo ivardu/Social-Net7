@@ -12,7 +12,17 @@ class SignUpForm(UserCreationForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
-	dob = forms.DateField(input_formats=['%d/%m/%Y'])
+	dob = forms.DateField(input_formats=['%d/%m/%Y'], required=False)
 	class Meta:
 		model = Profile
 		fields = '__all__'
+
+
+class UserUpdateForm(forms.ModelForm):
+	# Leaving optional to the users in updating the fields first_name and last_name
+	# first_name = forms.CharField()
+	# last_name = forms.CharField()
+
+	class Meta:
+		model = SnetUser
+		fields = ['email', 'first_name', 'last_name']
