@@ -31,7 +31,7 @@ class Profile(models.Model):
 
 	image = models.ImageField(default='female.jpg', upload_to=profile_img_directory)
 	user = models.OneToOneField(SnetUser, on_delete=models.CASCADE)
-	dob = models.DateField()
+	dob = models.DateField(null=True, blank=True)
 
 	def __str__(self):
 		return f'{self.user.email} Profile'

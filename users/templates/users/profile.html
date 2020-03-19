@@ -1,17 +1,38 @@
 {% extends 'users/base.html' %}
 {% load crispy_forms_tags %}
+<!-- {% load i18n %} -->
 {% block body %}
-<div class="container shadow-lg mt-2 p-3">
+<div class="w-50 mx-auto mt-2">
 	{% if messages %}
 		{% for message in messages %}
-		<span>{{message}}</span>
+		<div class="shadow-lg alert alert-success" align="center">
+			<span>{{message}}</span>
+		</div>
 		{% endfor %}
 	{% endif %}
-	<form method="post" enctype="mulitpart/form-data">
-		{{profile_form|crispy}}
-		{{user_form|crispy}}
-		<input type="submit" name="submit" value="Update">
-	</form>
+</div>
+<div class="container rounded shadow-lg mt-2 p-3 w-25">
+	<div class="row">
+		<div class="col-md-3">
+			<img class="img-thumbnail rounded-circle" src="{{request.user.profile.image.url}}" width="50" height="50">
+		</div>
+		<div class="col-md-6">
+			<div>
+				<span>{{request.user.first_name}} {{request.user.last_name}}</span>
+			</div>
+			<span>{{request.user.email}}</span>
+		</div>
+	</div>
+	<div>
+		<form method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{profile_form|crispy}}
+			{{user_form|crispy}}
+			<div align="center">
+				<input class="btn btn-success" type="submit" name="submit" value="Update" >	
+			</div>
+		</form>
+	</div>
 	
 </div>
 {% endblock body %}

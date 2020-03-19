@@ -12,19 +12,23 @@
 </div>
 <div class="container w-25">
 	{% for item in feed %}
-	<div class="row shadow-lg p-3 mt-2">
-		<div class="col-md-3">
-			
+	<div class="row shadow-lg p-2 mt-2 rounded">
+		<div class="col-md-3 p-0">
+			<img class="img-thumbnail rounded-circle" src="{{item.user.profile.image.url}}" width="50" height="50">
 		</div>
-		<div class="col-md-9">
+		<div class="col-md-9 pl-0">
+			<div class="row">
+				<small>{{item.user.first_name}} {{item.user.last_name}}</small>
+			</div>
 			<div class="row">
 				<small>{{item.user.email}}</small>
 			</div>
-			<div class="row">
+			<!-- <hr class="p-0"> -->
+			<div class="row mt-2 mb-1">
 				<small>{{item.post_info}}</small>
 			</div>
 			<div class="row">
-				<img src="{{item.image.url}}" width="200" height="200">
+				<img src="{{item.image.url}}" width="400" height="400">
 			</div>
 		</div>
 	</div>

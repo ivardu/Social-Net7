@@ -2,11 +2,13 @@ from django.test import TestCase
 from django.urls import reverse
 from django.conf import settings 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from feed.models import Feed
+from django.core.files import File
+from feed.models import Feed, Likes
 from feed import models
 from feed.forms import FeedForm
 from users.models import SnetUser
 import os
+from unittest import mock
 from io import BytesIO
 
 from model_bakery import baker
@@ -23,7 +25,22 @@ class FeedModelTest(TestCase):
 
 	def setUp(self):
 		# Initializing the Feed model with Model Baker 
-		self.feed = baker.make('Feed')
+		try:
+			# image = mock.MagicMock(spec=File)
+			# image.name = 'Test_image'
+			self.feed = baker.make('Feed', image=image['image'])
+
+		except Exception as e:
+			print(e)
+		 # image = mock.MagicMock(spec=File, name='Test_image')
+
+
+		# print(self.feed.image)
+		# pass
+		# if self.feed.image:
+		# 	print(True)
+		# else:
+		# 	print(False)
 		# self.client.login(username='Ramesh@gmail.com', password='') 
 
 	def test_feed(self):
@@ -97,6 +114,7 @@ class FeedViewTest(TestCase):
 		# Testing Feedlist is passed to same template or not - checking first object of query set
 		feed_response = self.client.get(reverse('feed:feed'))
 		self.assertEqual(feed_response.context.get('feed')[0].user.email,'Test@gmail.com')
+		self.assertContains(feed_response, 'feed')
 
 
 class FeedFormTest(TestCase):
@@ -126,8 +144,21 @@ class FeedFormTest(TestCase):
 		form = FeedForm(self.data)
 		self.assertFalse(form.is_valid())
 
+	# def test_feed_form_list(self):
 
 
+class LikeModelTest(TestCase):
+
+	def setUp(self):
+		self.feed = baker.make(Feed, image=image['image'])
+		self.likes = baker.make(Likes, feed=self.feed)
+
+	def test_likes_model(self):
+		self.assertIsInstance(self.likes, Likes)
+
+	def test_likes_attr_count(self):
+		# print()
+		self.assertTrue(self.likes.likes,0)
 
 
 

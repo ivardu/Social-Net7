@@ -1,6 +1,7 @@
 from users.models import SnetUser, Profile
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.admin.widgets import AdminDateWidget
 
 
 class SignUpForm(UserCreationForm):
@@ -12,10 +13,12 @@ class SignUpForm(UserCreationForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
-	dob = forms.DateField(input_formats=['%d/%m/%Y'], required=False)
+	dob = forms.DateField(input_formats=['%d/%m/%Y'], required=False, widget=forms.TextInput(attrs={
+		'id':'datepicker'
+		}))
 	class Meta:
 		model = Profile
-		fields = '__all__'
+		fields = ['image', 'dob']
 
 
 class UserUpdateForm(forms.ModelForm):
