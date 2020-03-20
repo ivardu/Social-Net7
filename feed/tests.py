@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.conf import settings 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.files import File
+from django.test import tag
 from feed.models import Feed, Likes
 from feed import models
 from feed.forms import FeedForm
@@ -146,7 +147,7 @@ class FeedFormTest(TestCase):
 
 	# def test_feed_form_list(self):
 
-
+@tag('likes')
 class LikeModelTest(TestCase):
 
 	def setUp(self):
@@ -159,6 +160,17 @@ class LikeModelTest(TestCase):
 	def test_likes_attr_count(self):
 		# print()
 		self.assertTrue(self.likes.likes,0)
+
+@tag('likes')
+class LikeURLTest(TestCase):
+
+	def setUp(self):
+		self.likes_url = self.client.get(reverse('feed:likes', args=(1,)))
+
+	def test_likes_url(self):
+		self.assertTrue(self.likes_url.status_code, 200)
+
+
 
 
 

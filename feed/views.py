@@ -28,4 +28,20 @@ def feed(request):
 # 	form_class = FeedForm
 # 	template_name = 'feed/feed.html'
 
+def likes(request, id):
+	try:
+		feed = Feed.objects.get(pk=id)
+	except:
+		print('Try')
+	if request.method == 'POST':
+		likes_form = LikesForm(request.POST)
+		if likes_form.is_valid():
+			likes_obj = likes_form.save(commit=False)
+			likes_obj.feed = feed
+			likes_obj.save()
+
+			return HttpResponseRedirect(reverse('feed:feed'))
+
+	return HttpResponse('hello')
+
  

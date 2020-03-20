@@ -24,6 +24,7 @@ def login_func(data={}):
 	c = Client()
 	signup_url = reverse('register')
 	signup_response = c.post(signup_url, data, follow=True)
+	# print(Profile.objects.all())
 
 
 	return (signup_url,signup_response)
