@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import ugettext, ugettext_lazy as _, ugettext_noop 
 from django.contrib.auth.decorators import login_required
-from feed.forms import FeedForm
+from feed.forms import FeedForm, LikesForm
 from feed.models import Feed
 from django.views.generic.edit import FormView
 
@@ -32,14 +32,15 @@ def likes(request, id):
 	try:
 		feed = Feed.objects.get(pk=id)
 	except:
-		print('Try')
+		print('Exception in id of feed model')
 	if request.method == 'POST':
 		likes_form = LikesForm(request.POST)
 		if likes_form.is_valid():
 			likes_obj = likes_form.save(commit=False)
 			likes_obj.feed = feed
+			likes_obj.user = request.user
 			likes_obj.save()
-
+			# print(likes_obj.feed)
 			return HttpResponseRedirect(reverse('feed:feed'))
 
 	return HttpResponse('hello')

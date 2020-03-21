@@ -32,4 +32,5 @@ class Feed(models.Model):
 class Likes(models.Model):
 	likes = models.IntegerField()
 	feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
+	user = models.ForeignKey(SnetUser, on_delete=models.CASCADE)
 

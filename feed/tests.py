@@ -152,23 +152,36 @@ class LikeModelTest(TestCase):
 
 	def setUp(self):
 		self.feed = baker.make(Feed, image=image['image'])
-		self.likes = baker.make(Likes, feed=self.feed)
+		self.user = baker.make(SnetUser)
+		self.likes = baker.make(Likes, likes=0, feed=self.feed, user=self.user)
+		self.likes_url_get = self.client.get(reverse('feed:likes', args=(self.feed.id,)))
+		self.user_2 = baker.make(SnetUser)
+		# self.likes_url_post = self.client.post(reverse('feed:likes', args=(self.feed.id,)), {'likes':(self.likes.likes)+1, 'feed':self.feed, 'user':self.user_2.id})
 
 	def test_likes_model(self):
 		self.assertIsInstance(self.likes, Likes)
 
 	def test_likes_attr_count(self):
-		# print()
-		self.assertTrue(self.likes.likes,0)
+		# print(self.likes.likes)
+		self.assertEqual(self.likes.likes,0)
 
-@tag('likes')
-class LikeURLTest(TestCase):
+	def test_likes_url_get(self):
+		# print(self.likes_url.status_code)
+		self.assertTrue(self.likes_url_get.status_code, 200)
+		self.assertContains(self.likes_url_get, 'hello')
 
-	def setUp(self):
-		self.likes_url = self.client.get(reverse('feed:likes', args=(1,)))
+	# def test_likes_url_post(self):
+	# 	self.assertEqual(self.likes_url_post.status_code, 302)
+	# 	print(Feed.objects.get(pk=1).likes_set.get(pk=2).likes)
+	# 	self.assertEqual(Feed.objects.get(pk=1).likes_set.likes, 1)
 
-	def test_likes_url(self):
-		self.assertTrue(self.likes_url.status_code, 200)
+# @tag('likes')
+# class LikeURLTest(TestCase):
+
+# 	def setUp(self):
+		
+
+
 
 
 
