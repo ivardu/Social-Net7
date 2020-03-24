@@ -19,7 +19,8 @@ def feed(request):
 			feed_obj.user = request.user
 			feed_obj.save()
 			return HttpResponseRedirect(reverse('feed:feed'))
-
+	# else:
+		# likes = feed.likes_set.filter(likes=1).count()
 
 	return render(request, 'feed/feed.html', locals())
 	# return HttpResponse('Whats happening')

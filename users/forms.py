@@ -22,7 +22,7 @@ class ProfileUpdateForm(forms.ModelForm):
 
 
 class UserUpdateForm(forms.ModelForm):
-	# Leaving optional to the users in updating the fields first_name and last_name
+	# Leaving optional to the-- users in updating the fields first_name and last_name
 	# first_name = forms.CharField()
 	# last_name = forms.CharField()
 

@@ -28,6 +28,9 @@ class Feed(models.Model):
 			image = img.resize(resize, Image.ANTIALIAS)
 			image.save(self.image.path)
 
+	def likes_count(self):
+		return self.likes_set.filter(likes=1).count()
+
 
 class Likes(models.Model):
 	likes = models.IntegerField()

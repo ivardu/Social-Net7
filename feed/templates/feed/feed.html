@@ -30,6 +30,9 @@
 			<div class="row">
 				<img src="{{item.image.url}}" width="400" height="400">
 			</div>
+			<div class="row">
+				 <small><a href="{% url 'feed:likes' feed.id %}">Likes</a>{{item.likes_count}}</small>
+			</div>
 		</div>
 	</div>
 	{% endfor %}

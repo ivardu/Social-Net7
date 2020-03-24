@@ -8,6 +8,7 @@ from feed.models import Feed, Likes
 from feed import models
 from feed.forms import FeedForm
 from users.models import SnetUser
+from users.forms import SignUpForm
 import os
 from unittest import mock
 from io import BytesIO
@@ -155,8 +156,18 @@ class LikeModelTest(TestCase):
 		self.user = baker.make(SnetUser)
 		self.likes = baker.make(Likes, likes=0, feed=self.feed, user=self.user)
 		self.likes_url_get = self.client.get(reverse('feed:likes', args=(self.feed.id,)))
-		self.user_2 = baker.make(SnetUser)
-		# self.likes_url_post = self.client.post(reverse('feed:likes', args=(self.feed.id,)), {'likes':(self.likes.likes)+1, 'feed':self.feed, 'user':self.user_2.id})
+		self.data = {
+			'email':'ravi@gmail.com', 
+			'password1':'Testing@007', 
+			'password2':'Testing@007'
+		}
+		form = SignUpForm(self.data)
+		form.save()
+		resp = self.client.login(username='ravi@gmail.com', password='Testing@007')
+		self.user_new = SnetUser.objects.get(email='ravi@gmail.com')
+		self.likes_url_post = self.client.post(reverse('feed:likes', args=(self.feed.id,)), {'likes':(self.likes.likes)+1, 'feed':self.feed, 'user':self.user_new.id})
+		self.feed_resp = self.client.get(reverse('feed:feed')) 
+		# print((self.feed_resp.context.get('feed')[0]).likes_count())
 
 	def test_likes_model(self):
 		self.assertIsInstance(self.likes, Likes)
@@ -170,10 +181,14 @@ class LikeModelTest(TestCase):
 		self.assertTrue(self.likes_url_get.status_code, 200)
 		self.assertContains(self.likes_url_get, 'hello')
 
-	# def test_likes_url_post(self):
-	# 	self.assertEqual(self.likes_url_post.status_code, 302)
-	# 	print(Feed.objects.get(pk=1).likes_set.get(pk=2).likes)
-	# 	self.assertEqual(Feed.objects.get(pk=1).likes_set.likes, 1)
+	def test_likes_url_post(self):
+		self.assertEqual(self.likes_url_post.status_code, 302)
+		self.assertEqual((Feed.objects.get(pk=self.feed.id)).likes_set.get(user=self.user_new).likes, 1)
+		self.assertEqual((Feed.objects.get(pk=self.feed.id)).likes_set.filter(likes=1).count(),1)
+
+
+	# def test_likes_form(self):
+	# 	self.assertTemplateUsed(self.likes_url)
 
 # @tag('likes')
 # class LikeURLTest(TestCase):
