@@ -1,0 +1,2 @@
+1. Why we call the super method in the return of a local method
+2. How we can set the format of the date which is displayed in the django form

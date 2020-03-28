@@ -19,13 +19,16 @@ from users import views as user_views
 from django.contrib.auth.views import LoginView, LogoutView
 from django.conf import settings 
 from django.conf.urls.static import static
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('feed/',include('feed.urls')),
     path('',user_views.SignUpView.as_view(), name='register'),
     path('login/',LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', LogoutView.as_view(template_name='users/logout.html'), name='logout'),
-    path('profile/', user_views.profile, name='profile')
+    path('profile/', user_views.profile, name='profile'),
+    path('rprofile/<int:id>', user_views.rprofile, name='rprofile')
 ]
 
 if settings.DEBUG:

@@ -21,6 +21,15 @@ class SnetUser(AbstractUser):
 	def get_absolute_url(self):
 		return reverse('login')
 
+	def truncate(self):
+		return f'{self.email}'.split('@')[0]
+
+	def fname_empty(self):
+		if self.first_name == '':
+			return True
+		else:
+			return False
+
 
 def profile_img_directory(instance, filename):
 

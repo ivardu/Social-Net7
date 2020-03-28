@@ -1,0 +1,26 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+<!-- {% load i18n %} -->
+{% block body %}
+<div class="container rounded shadow-lg mt-2 p-3 w-25">
+	<div class="row">
+		<div class="col-md-3">
+			<img class="img-thumbnail rounded-circle" src="{{user.profile.image.url}}" width="50" height="50">
+		</div>
+		<div class="col-md-6">
+			<div>
+				<span>{{user.first_name}} {{user.last_name}} | Profile</span>
+			</div>
+			<span>{{user.email}}</span>
+		</div>
+	</div>
+	<div>
+		<form>
+			{% csrf_token %}
+			{{u_form|crispy}}
+			{{p_form|crispy}}
+		</form>
+	</div>
+	
+</div>
+{% endblock body %}

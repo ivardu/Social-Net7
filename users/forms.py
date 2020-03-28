@@ -29,3 +29,24 @@ class UserUpdateForm(forms.ModelForm):
 	class Meta:
 		model = SnetUser
 		fields = ['email', 'first_name', 'last_name']
+
+
+
+class ProfileReadOnlyForm(forms.ModelForm):
+	dob = forms.DateField(disabled=True)
+	# first_name = forms.CharField(disabled=True)
+	# last_name = forms.CharField(disabled=True)
+
+	class Meta:
+		model = Profile
+		fields = ['dob']
+
+
+class UserReadOnlyForm(forms.ModelForm):
+	first_name = forms.CharField(disabled=True)
+	last_name = forms.CharField(disabled=True)
+	email = forms.CharField(disabled=True)
+
+	class Meta:
+		model = SnetUser
+		fields = ['first_name', 'last_name', 'email']

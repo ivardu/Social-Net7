@@ -37,3 +37,15 @@ class Likes(models.Model):
 	feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
 	user = models.ForeignKey(SnetUser, on_delete=models.CASCADE)
 
+	def __str__(self):
+		return f'{self.user} likes'
+
+
+class Comments(models.Model):
+
+	comments = models.CharField(max_length=255)
+	user = models.ForeignKey(SnetUser, on_delete=models.CASCADE)
+	feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return f"{self.user} comments"

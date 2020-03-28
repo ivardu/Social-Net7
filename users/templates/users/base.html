@@ -22,7 +22,7 @@
 			        <a class="nav-link text-white" href="{% url 'feed:feed' %}">Feed</a>
 			      </li>
 			      <li class="nav-item">
-			        <a class="nav-link text-white" href="#">MyPosts</a>
+			        <a class="nav-link text-white" href="{% url 'feed:myposts' request.user.id %}">MyPosts</a>
 			      </li>
 			    </ul>
 			    <ul class="navbar-nav mr-auto">

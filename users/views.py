@@ -3,7 +3,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.edit import FormView, CreateView
 # from django.contrib.auth.views import UserCreation
-from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm
+from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm, ProfileReadOnlyForm, UserReadOnlyForm
 from users.models import SnetUser
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -41,3 +41,12 @@ def profile(request):
 
 
 	return render(request, 'users/profile.html', locals())
+
+
+
+def rprofile(request, id):
+	user = SnetUser.objects.get(pk=id)
+	p_form = ProfileReadOnlyForm(instance=user.profile)
+	u_form = UserReadOnlyForm(instance=user)
+
+	return render(request, 'users/rprofile.html', locals())

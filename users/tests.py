@@ -4,13 +4,13 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse, resolve
 from django.contrib import auth
 from django.conf import settings
-from django.test import Client
+from django.test import Client, tag
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.utils import IntegrityError
 
 from users.models import SnetUser, Profile, profile_img_directory
 from users.views import SignUpView
-from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm
+from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm, ProfileReadOnlyForm, UserReadOnlyForm
 from model_bakery import baker
 from unittest.mock import patch
 from users.signals import create_profile
@@ -74,11 +74,9 @@ class UsersManagersTest(TestCase):
 		with self.assertRaises(ValueError):
 			User.objects.create_superuser(email='super@user.com', password='foo', is_superuser=False)
 
-
+@tag('usermodel')
 class UsersModelTest(TestCase):
 	# User Model Test Cases
-	pass
-
 	def setUp(self):
 		# Instantiating the model 
 		self.snetuser = baker.make(User)
@@ -91,7 +89,10 @@ class UsersModelTest(TestCase):
 		self.assertTrue(self.snetuser.password)
 		self.assertTrue(self.snetuser.__str__(), '<SnetUser: {}'.format(self.snetuser.email))
 
-
+	def test_snetuser_model_email_truncate_method(self):
+		# print(self.snetuser.truncate())
+		self.assertTrue(self.snetuser.truncate())
+		self.assertTrue(self.snetuser.fname_empty())
 
 
 class UsersViewsTest(TestCase):
@@ -252,7 +253,7 @@ class UsersFormsTest(TestCase):
 		self.assertTrue(form.is_valid())
 
 
-
+@tag('profile')
 class UserProfileTest(TestCase):
 
 	def setUp(self):
@@ -271,6 +272,7 @@ class UserProfileTest(TestCase):
 
 		self.resolver = resolve('/profile/') 
 		self.new_user = SnetUser.objects.get(email='Ramesh@gmail.com')
+		self.ronly_profile = self.client.get(reverse('rprofile', args=(self.user.id)))
 		
 
 	# Testing the Profile Form test
@@ -350,6 +352,29 @@ class UserProfileTest(TestCase):
 		form.save()
 		self.assertTrue(SnetUser.objects.get(id=self.user.id).first_name=='Ravi')
 
+	@tag('rprofile')
+	def test_rprofile_url(self):
+		self.assertEqual(self.ronly_profile.status_code, 200)
+
+
+@tag('ronly')
+class ProfileUsersReadFormTest(TestCase):
+
+	def setUp(self):
+		# print(ProfileReadOnlyForm())
+		self.user = baker.make(SnetUser)
+		self.p_form = ProfileReadOnlyForm(instance=self.user.profile)
+		self.u_form = UserReadOnlyForm(instance=self.user)
+		self.resp = self.client.post(reverse('rprofile', args=(self.user.id,)))
+
+		
+		# print(self.p_form)
+
+	def test_profile_read_form(self):
+		self.assertTrue(self.p_form)
+		self.assertTrue(self.u_form)
+		self.assertContains(self.resp, self.user.email)
+		
 
 
 

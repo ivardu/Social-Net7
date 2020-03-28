@@ -4,11 +4,11 @@ from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.files import File
 from django.test import tag
-from feed.models import Feed, Likes
+from feed.models import Feed, Likes, Comments
 from feed import models
-from feed.forms import FeedForm
+from feed.forms import FeedForm, CommentsForm, LikesForm
 from users.models import SnetUser
-from users.forms import SignUpForm
+from users.forms import SignUpForm 
 import os
 from unittest import mock
 from io import BytesIO
@@ -163,11 +163,15 @@ class LikeModelTest(TestCase):
 		}
 		form = SignUpForm(self.data)
 		form.save()
-		resp = self.client.login(username='ravi@gmail.com', password='Testing@007')
-		self.user_new = SnetUser.objects.get(email='ravi@gmail.com')
+		resp = self.client.login(username=self.data['email'], password='Testing@007')
+		self.user_new = SnetUser.objects.get(email=self.data['email'])
 		self.likes_url_post = self.client.post(reverse('feed:likes', args=(self.feed.id,)), {'likes':(self.likes.likes)+1, 'feed':self.feed, 'user':self.user_new.id})
 		self.feed_resp = self.client.get(reverse('feed:feed')) 
-		# print((self.feed_resp.context.get('feed')[0]).likes_count())
+		self.dupl_data = {
+			'likes':1,
+			'feed':self.feed.id,
+			'user':self.user_new.id
+		}
 
 	def test_likes_model(self):
 		self.assertIsInstance(self.likes, Likes)
@@ -176,24 +180,83 @@ class LikeModelTest(TestCase):
 		# print(self.likes.likes)
 		self.assertEqual(self.likes.likes,0)
 
-	def test_likes_url_get(self):
-		# print(self.likes_url.status_code)
-		self.assertTrue(self.likes_url_get.status_code, 200)
-		self.assertContains(self.likes_url_get, 'hello')
-
 	def test_likes_url_post(self):
 		self.assertEqual(self.likes_url_post.status_code, 302)
+		# print(Likes.objects.all())
+		# print(Likes.objects.get(user=self.user_new))
 		self.assertEqual((Feed.objects.get(pk=self.feed.id)).likes_set.get(user=self.user_new).likes, 1)
 		self.assertEqual((Feed.objects.get(pk=self.feed.id)).likes_set.filter(likes=1).count(),1)
 
+	def test_likes_duplicate(self):
+		likes_form = LikesForm(data=self.dupl_data)
+		self.assertTrue(likes_form.is_valid())
+		resp = self.client.post(reverse('feed:likes', args=(self.feed.id,)), {'likes':1, 'feed':self.feed, 'user':self.user_new.id})
+		self.assertContains(resp, 'Failing')
+		self.assertEqual(len(Likes.objects.filter(feed=self.feed).filter(user=self.user_new)),1)
+		
 
-	# def test_likes_form(self):
-	# 	self.assertTemplateUsed(self.likes_url)
 
-# @tag('likes')
-# class LikeURLTest(TestCase):
+@tag('comments')
+class CommentModelTest(TestCase):
 
-# 	def setUp(self):
+	def setUp(self):
+		self.feed = baker.make(Feed, image=image['image'])
+		self.coment = baker.make(Comments, feed=self.feed)
+		# print(self.coment)
+		self.user = baker.make(SnetUser)
+		self.comment = Comments.objects.get(pk=1)
+		self.data = {
+			'comments':'Hello World',
+			'user':self.user,
+			'feed':self.feed
+		}
+		
+		self.test = {
+				'email':'ravi_new@gmail.com',
+				'password1':'Daddy@007',
+				'password2':'Daddy@007'
+		}
+		s_form = SignUpForm(data=self.test)
+		# # # # form = SignUpForm(self.data)
+		# # # print(form.is_valid())
+		s_form.save()
+		resp = self.client.login(username=self.test['email'], password=self.test['password1'])
+		# print(SnetUser.object.all())
+		self.comm_resp = self.client.post(reverse('feed:comments', args=(self.feed.id,)), {'comments':'Hello World'})
+
+	def test_comment_model(self):
+		self.assertIsInstance(self.comment, Comments)
+		# self.assertTrue(self.feed in self.comment)
+
+	def test_commet_form_valid(self):
+		form = CommentsForm(data=self.data)
+		self.assertTrue(form.is_valid())
+
+	def test_comment_form_invalid(self):
+		form = CommentsForm(data={})
+		self.assertFalse(form.is_valid())
+
+	def test_comment_status_code(self):
+		self.assertEqual(self.comm_resp.status_code, 302)
+
+	def test_comment_model_object(self):
+		comment = Comments.objects.get(comments='Hello World')
+		self.assertEqual('Hello World',comment.comments)
+
+@tag('myposts')
+class MyPostsViewsTest(TestCase):
+
+	def setUp(self):
+		self.user = baker.make(SnetUser)
+		self.feed = baker.make(Feed, user=self.user, image=image['image'])
+		self.resp = self.client.get(reverse('feed:myposts', args=(self.user.id,)))
+
+
+	def test_myposts_response(self):
+		# print(self.user.feed_set.all())
+		self.assertEqual(self.resp.status_code, 200)
+		self.assertContains(self.resp, self.user.truncate())
+		self.assertContains(self.resp, image['image'])
 		
 
 

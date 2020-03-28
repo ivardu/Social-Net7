@@ -1,15 +1,6 @@
 {% extends 'users/base.html' %}
 {% load crispy_forms_tags %}
 {% block body %}
-<div class="container w-25 shadow-lg p-3 ">
-	<form method='post' enctype='multipart/form-data'>
-		{% csrf_token %}
-		{{feed_form|crispy }}
-		<div align="center">
-			<input class="btn btn-primary w-100" type="submit" name="submit" value="Post">
-		</div>
-	</form>
-</div>
 <div class="container">
 	{% for item in feed %}
 		<div class="row container shadow-lg p-2 mt-2 rounded w-50 mx-auto ">
@@ -19,19 +10,11 @@
 			<div class="col-md-9">
 				<!-- Feed Post User Details -->
 				<div class="row">
-				{% if item.user == request.user %}
 					{% if item.user.fname_empty %}
 					<small><a href="{% url 'profile' %}">{{item.user.truncate|title}}</a></small>
 					{% else %}
 					<small><a href="{% url 'profile' %}">{{item.user.first_name}} {{item.user.last_name}}</a></small>
 					{% endif %}
-				{% else %}
-					{% if item.user.fname_empty %}
-					<small><a href="{% url 'rprofile' item.user.id %}">{{item.user.truncate|title}}</a></small>
-					{% else %}
-					<small><a href="{% url 'rprofile' item.user.id %}">{{item.user.first_name}} {{item.user.last_name}}</a></small>
-					{% endif %}
-				{% endif %}
 				</div>
 				<div class="row">
 					<small>{{item.user.email}}</small>
