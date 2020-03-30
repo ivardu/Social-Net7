@@ -13,7 +13,7 @@
 <div class="container">
 	{% for item in feed %}
 		<div class="row container shadow-lg p-2 mt-2 rounded w-50 mx-auto ">
-			<div class="col-md-2 p-0">
+			<div class="col-md-2">
 				<img class="img-thumbnail rounded-circle" src="{{item.user.profile.image.url}}" width="50" height="50">
 			</div>
 			<div class="col-md-9">
@@ -89,6 +89,15 @@
 			</div>
 		</div>
 	{% endfor %}
+</div>
+<div class="container w-50">
+	{% if is_paginated %}
+		{% for pages in page_obj %}
+			{% if pages.has_previous %}
+				<small><a href="?page={{pages.page_number}}">{{pages.page_number}}</a></small>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
 </div>
 
 {% endblock body %}

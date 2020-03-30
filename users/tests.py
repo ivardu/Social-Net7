@@ -272,7 +272,7 @@ class UserProfileTest(TestCase):
 
 		self.resolver = resolve('/profile/') 
 		self.new_user = SnetUser.objects.get(email='Ramesh@gmail.com')
-		self.ronly_profile = self.client.get(reverse('rprofile', args=(self.user.id)))
+		self.ronly_profile = self.client.get(reverse('rprofile', args=(self.user.id,)))
 		
 
 	# Testing the Profile Form test

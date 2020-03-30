@@ -35,7 +35,13 @@
 			    </ul>
 			    <ul class="navbar-nav ml-auto">
 			    	<li class="nav-item">
-			    		<a class="nav-link text-white" href="{% url 'profile' %}"><span class="btn btn-sm btn-success">Profile</span></a>
+			    		<a class="nav-link text-white" href="{% url 'profile' %}">
+			    			{% if request.user.fname_empty%}
+			    			<span class="btn btn-sm btn-success"><img class="img-thumbnail rounded-circle" src="{{request.user.profile.image.url}}" width="30" height="30">{{request.user.truncate|title}}</span></a>
+			    			{% else %}
+			    			<span class="btn btn-sm btn-success"><img class="img-thumbnail rounded-circle" src="{{request.user.profile.image.url}}" width="30" height="30">{{request.user.first_name|title}}</span></a>
+			    			{% endif %}
+
 				    </li>
 				    <li class="navbar-nav ml-auto">
 				    	<a class="nav-link text-white" href="{% url 'logout' %}"><span class="btn btn-sm btn-danger">LogOut</span></a>
