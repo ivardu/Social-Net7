@@ -1,4 +1,4 @@
-from users.models import SnetUser, Profile
+from users.models import SnetUser, Profile, Friends
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.admin.widgets import AdminDateWidget
@@ -50,3 +50,17 @@ class UserReadOnlyForm(forms.ModelForm):
 	class Meta:
 		model = SnetUser
 		fields = ['first_name', 'last_name', 'email']
+
+
+
+class FriendsReqForm(forms.ModelForm):
+
+	class Meta:
+		model = Friends
+		fields = ['freq']
+
+class FriendsAccpForm(forms.ModelForm):
+
+	class Meta:
+		model = Friends
+		fields = ['friends']

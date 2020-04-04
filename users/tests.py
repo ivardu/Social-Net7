@@ -8,9 +8,9 @@ from django.test import Client, tag
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.utils import IntegrityError
 
-from users.models import SnetUser, Profile, profile_img_directory
+from users.models import SnetUser, Profile, profile_img_directory, Friends
 from users.views import SignUpView
-from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm, ProfileReadOnlyForm, UserReadOnlyForm
+from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm, ProfileReadOnlyForm, UserReadOnlyForm, FriendsReqForm, FriendsAccpForm
 from model_bakery import baker
 from unittest.mock import patch
 from users.signals import create_profile
@@ -361,19 +361,80 @@ class UserProfileTest(TestCase):
 class ProfileUsersReadFormTest(TestCase):
 
 	def setUp(self):
-		# print(ProfileReadOnlyForm())
 		self.user = baker.make(SnetUser)
 		self.p_form = ProfileReadOnlyForm(instance=self.user.profile)
 		self.u_form = UserReadOnlyForm(instance=self.user)
-		self.resp = self.client.post(reverse('rprofile', args=(self.user.id,)))
-
-		
-		# print(self.p_form)
+		self.obj = SnetUser.objects.create(email='ravi@gmail.com')
+		self.obj.set_password('Testing@007')
+		self.obj.save()
+		response = self.client.login(username='ravi@gmail.com', password='Testing@007')
+		# self.resp = self.client.get(reverse('rprofile', args=(self.user.id,)))
 
 	def test_profile_read_form(self):
 		self.assertTrue(self.p_form)
 		self.assertTrue(self.u_form)
-		self.assertContains(self.resp, self.user.email)
+		# self.assertContains(self.resp, self.user.email)
+
+
+@tag('friends')
+class FriendsModelTest(ProfileUsersReadFormTest):
+
+	def setUp(self):
+		super().setUp()
+		self.freq_form = FriendsReqForm()
+		self.facp_form = FriendsAccpForm()
+		self.req_user = baker.make(SnetUser)
+		self.accp_user = SnetUser.objects.create(email='naresh@gmail.com')
+		self.accp_user.set_password('Testing@007')
+		self.accp_user.save()
+		self.client.login(username='ravi@gmail.com', password='Testing@007')
+		self.friend_req = self.client.post(reverse('friends_req', args=(self.accp_user.id,)), data={'freq':'Yes'}, follow=True)
+		self.rprof_resp = self.client.get(reverse('rprofile', args=(self.req_user.id,)))
+		self.client.login(username='naresh@gmail.com', password='Testing@007')
+		self.friend_accp = self.client.post(reverse('friends_accp', args=(self.obj.id,)), data={'friends':'Yes'},follow=True)
+		# print(self.rprof_resp.context.get('freq_form'))
+
+	def test_friends_model(self):
+		self.assertTrue(self.freq_form)
+		self.assertTrue(self.facp_form)
+		self.assertIn('freq',self.freq_form.fields)
+		self.assertIn('friends', self.facp_form.fields)
+
+	def test_url_friends(self):
+		self.assertEqual(self.friend_req.status_code, 200)
+		self.assertContains(self.friend_req, self.accp_user)
+		self.assertContains(self.rprof_resp, 'freq')
+		self.assertEqual(self.friend_accp.status_code, 200)
+
+	def test_get_post_urls(self):
+		resp_freq = self.client.get(reverse('friends_accp', args=(self.user.id,)))
+		self.assertEqual(resp_freq.status_code, 405)
+		resp_faccp = self.client.get(reverse('friends_req', args=(self.user.id,)))
+		self.assertEqual(resp_faccp.status_code, 405)
+
+@tag('search')
+class SearchTest(ProfileUsersReadFormTest):
+
+	def setUp(self):
+		super().setUp()
+		self.new_user = baker.make(SnetUser)
+		self.new_user.first_name = self.new_user.truncate()
+		self.new_user.save()
+		data = {'search':self.new_user.truncate()}
+		self.resp = self.client.post(reverse('search'), data=data)
+		# Testing the domain page url redirect post authentication
+		self.home_page = self.client.get(reverse('register'), follow=True)
+
+	def test_search_url(self):
+		self.assertEqual(self.resp.status_code, 200)
+		self.assertIsInstance(self.resp.context['user'], SnetUser)
+		self.assertContains(self.home_page, 'LogOut')
+		self.assertEqual(self.home_page.status_code, 200)
+		self.assertContains(self.resp, self.new_user)
+
+
+
+
 		
 
 

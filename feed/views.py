@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import ugettext, ugettext_lazy as _, ugettext_noop 
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from feed.forms import FeedForm, LikesForm, CommentsForm
 from feed.models import Feed, Likes, Comments
@@ -17,6 +19,17 @@ def feed(request):
 	feed = Feed.objects.all()
 	feed_form = FeedForm()
 	comment_form = CommentsForm()
+	paginator = Paginator(feed, 5)
+	page = request.GET.get('page', 1)
+	try:
+		page_obj = paginator.get_page(page)
+
+	except PageNotAnInteger:
+		page_obj = paginator.get_page(1)
+
+	except EmptyPage:
+		page_obj = paginator.page(paginator.num_pages)
+
 	if request.method == 'POST':
 		feed_form = FeedForm(request.POST, request.FILES)
 		if feed_form.is_valid():
@@ -71,9 +84,9 @@ def comments(request, id):
 
 			return HttpResponseRedirect(reverse('feed:feed'))
 
-	return HttpResponse('Failing')
+	return HttpResponseRedirect(reverse('feed:feed'))
  
-
+@method_decorator(login_required, name='dispatch')
 class MyPostList(ListView):
 	template_name = 'feed/myposts.html'
 	paginate_by = 5
@@ -84,7 +97,9 @@ class MyPostList(ListView):
 		user = SnetUser.objects.get(id=self.kwargs['pk'])
 		return Feed.objects.filter(user=user)
 
-	# def get_context_data(self, *args, **kwargs):
-	# 	context = super().get_context_data(self, *args, **kwargs)
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['comment_form'] = CommentsForm
+		return context
 
 

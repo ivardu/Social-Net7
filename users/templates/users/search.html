@@ -1,0 +1,29 @@
+{% extends 'users/base.html' %}
+{% block search %}
+<li class="nav-item">
+    <form class="form-inline my-2 my-lg-0" method="post" action="{% url 'search' %}">
+    	{% csrf_token %}
+      <input type="search" class="form-control mr-sm-2" name="search" placeholder="Search People, Friends" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+</li>
+{% endblock search %}
+{% block body %}
+<div class="containter">
+	<div class="container shadow-lg p-3 mt-2 w-50">
+		<ul class="list-group list-group-flush">
+			{% if name_list %}
+				{% for user in name_list %}
+					<li class="list-group-item">
+						<small>{{user.email}}</small>
+					</li>
+				{% endfor %}
+			{% elif no_result %}
+				<li class="list-group-item">
+					<span>{{no_result}}</span>
+				</li>
+			{% endif %}
+		</ul>
+	</div>
+</div>
+{% endblock body %}

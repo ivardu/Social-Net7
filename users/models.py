@@ -16,7 +16,7 @@ class SnetUser(AbstractUser):
 	objects = CustomUserManager()
 
 	def __str__(self):
-		return self.email
+		return self.truncate()
 
 	def get_absolute_url(self):
 		return reverse('login')
@@ -44,3 +44,18 @@ class Profile(models.Model):
 
 	def __str__(self):
 		return f'{self.user.email} Profile'
+
+
+class Friends(models.Model):
+	freq = models.CharField(max_length=3, default='No')
+	freq_usr = models.ForeignKey(SnetUser, on_delete=models.CASCADE)
+	friends = models.CharField(max_length=3, default='No')
+	freq_accp = models.ForeignKey(SnetUser, on_delete=models.CASCADE, related_name='friend_accep')
+
+
+	def __str__(self):
+		return f'{self.freq_usr} {self.freq_accp}' 
+
+
+
+

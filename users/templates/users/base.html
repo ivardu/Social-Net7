@@ -14,7 +14,7 @@
 	<!-- Header or Nav Bar -->
 	<div>
 		<nav class="navbar navbar-expand-md navbar-dark bg-dark">
-		 	<a class="navbar-brand" href="#">Social Net7</a>
+		 	<a class="navbar-brand" href="{% url 'feed:feed' %}">Social Net7</a>
 			<div class="collapse navbar-collapse" id="navbarText">
 			{% if user.is_authenticated %}	
 			    <ul class="navbar-nav mr-auto">
@@ -26,20 +26,16 @@
 			      </li>
 			    </ul>
 			    <ul class="navbar-nav mr-auto">
-			    	<li class="nav-item">
-					    <form class="form-inline my-2 my-lg-0">
-					      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-					      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-					    </form>
-				    </li>
+			    	{% block search %}
+			    	{% endblock search%}
 			    </ul>
 			    <ul class="navbar-nav ml-auto">
 			    	<li class="nav-item">
 			    		<a class="nav-link text-white" href="{% url 'profile' %}">
 			    			{% if request.user.fname_empty%}
-			    			<span class="btn btn-sm btn-success"><img class="img-thumbnail rounded-circle" src="{{request.user.profile.image.url}}" width="30" height="30">{{request.user.truncate|title}}</span></a>
+			    			<span class="btn btn-sm btn-success"><img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="21"> {{request.user.truncate|title}}</span></a>
 			    			{% else %}
-			    			<span class="btn btn-sm btn-success"><img class="img-thumbnail rounded-circle" src="{{request.user.profile.image.url}}" width="30" height="30">{{request.user.first_name|title}}</span></a>
+			    			<span class="btn btn-sm btn-success"><img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="21"> {{request.user.first_name|title}}</span></a>
 			    			{% endif %}
 
 				    </li>

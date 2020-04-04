@@ -74,18 +74,26 @@
 	{% endfor %}
 </div>
 <div class="container mt-2 p-2" align="center">
-	{% if page_obj.has_previous %}
-		<small><a class="btn btn-outline-info" href="?page={{page_obj.previous_page_number}}"><<</a></small>
-	{% endif %}
-	{% for num in paginator.page_range %}
-		{% if num == page_obj.number %}
-			<small><a class="btn btn-info" href="?page={{num}}">{{num}}</a></small>
-		{% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'+3' %}
-			<small><a class="btn btn-outline-info" href="?page={{num}}">{{num}}</a></small>
+	{% if feed %}
+		{% if page_obj.has_previous %}
+			<small><a class="btn btn-outline-info" href="?page={{page_obj.previous_page_number}}"><<</a></small>
 		{% endif %}
-	{% endfor %}
-	{% if page_obj.has_next %}
-		<small><a class="btn btn-outline-info" href="?page={{page_obj.next_page_number}}">>></a></small>
+		{% for num in paginator.page_range %}
+			{% if num == page_obj.number and paginator.num_pages == 1 %}
+				<small><a class="btn btn-secondary" href="#"><<</a> <a class="btn btn-info" href="?page={{num}}">{{num}}</a> <a class="btn btn-secondary" href="#">>></a></small>
+			{% elif num == page_obj.number %}
+				<small><a class="btn btn-info" href="?page={{num}}">{{num}}</a></small>
+			{% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'+3' %}
+				<small><a class="btn btn-outline-info" href="?page={{num}}">{{num}}</a></small>
+			{% endif %}
+		{% endfor %}
+		{% if page_obj.has_next %}
+			<small><a class="btn btn-outline-info" href="?page={{page_obj.next_page_number}}">>></a></small>
+		{% endif %}
+	{% else %}
+	<div class="container shadow-lg rounded p-3 mt-2">
+		<small>You don't have any posts.. !! For posting <a href="{% url 'feed:feed' %}">click here</a></small>
+	</div>
 	{% endif %}
 </div>
 {% endblock body %}

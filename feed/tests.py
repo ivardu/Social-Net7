@@ -118,7 +118,7 @@ class FeedViewTest(TestCase):
 		self.assertEqual(feed_response.context.get('feed')[0].user.email,'Test@gmail.com')
 		self.assertContains(feed_response, 'feed')
 
-@tag('feed')
+@tag('feed_data')
 class FeedFormTest(TestCase):
 
 	def setUp(self):
@@ -127,9 +127,11 @@ class FeedFormTest(TestCase):
 		# self.user_new.set_password('Testing@007')
 		# self.user_new.save()
 		# self.feed_test = baker.make(Feed, _create_files=True)
+		file = open(os.path.join(settings.BASE_DIR, 'logged_out.jpg'), 'rb')
+		self.image = {'image':SimpleUploadedFile(name=file.name, content=file.read(), content_type='image/jpeg')}
 		self.data = {
 			'post_info':'Test_data',
-			'user': self.user,
+			# 'user': self.user,
 		}
 
 	def test_feed_form_has_fields(self):
@@ -139,10 +141,10 @@ class FeedFormTest(TestCase):
 		self.assertSequenceEqual(expected, actual)
 
 	def test_feed_form_is_valid(self):
-		self.data.update(image)
+		# self.data.update(image)
 		# print(self.data)
-		form = FeedForm(data=self.data, files=self.data)
-		# print(form.errors)
+		form = FeedForm(self.data, self.image)
+		print(form.errors)
 		self.assertTrue(form.is_valid())
 
 	def test_feed_form_is_invalid(self):
@@ -260,9 +262,16 @@ class MyPostsViewsTest(TestCase):
 		self.assertEqual(self.resp.status_code, 200)
 		self.assertContains(self.resp, self.user.truncate())
 		self.assertContains(self.resp, image['image'])
+		# print(self.resp.context['comment_form'])
+		self.assertContains(self.resp, 'comments')
+
+
+@tag('header_freinds')
+class HeaderFriendsTest(MyPostViewsTest):
+
+	def setUp(self):
+		super().setUp()
 		
-
-
 
 
 

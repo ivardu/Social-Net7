@@ -28,7 +28,10 @@ urlpatterns = [
     path('login/',LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', LogoutView.as_view(template_name='users/logout.html'), name='logout'),
     path('profile/', user_views.profile, name='profile'),
-    path('rprofile/<int:id>', user_views.rprofile, name='rprofile')
+    path('rprofile/<int:id>/', user_views.rprofile, name='rprofile'),
+    path('friends_req/<int:id>/', user_views.friends_req, name='friends_req'),
+    path('friends_accp/<int:id>/',user_views.friends_accp, name='friends_accp'),
+    path('search/',user_views.search, name='search')
 ]
 
 if settings.DEBUG:

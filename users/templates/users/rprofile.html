@@ -8,10 +8,17 @@
 			<img class="img-thumbnail rounded-circle" src="{{user.profile.image.url}}" width="50" height="50">
 		</div>
 		<div class="col-md-6">
+			{% if user.fname_empty %}
+			<div>
+				<span>{{user.truncate|title}} | Profile</span>
+			</div>
+			<span>{{user.email}}</span>
+			{% else %}
 			<div>
 				<span>{{user.first_name}} {{user.last_name}} | Profile</span>
 			</div>
 			<span>{{user.email}}</span>
+			{% endif %}
 		</div>
 	</div>
 	<div>
@@ -20,6 +27,32 @@
 			{{u_form|crispy}}
 			{{p_form|crispy}}
 		</form>
+	</div>
+	<div align="center">
+		{% if freq_sent.freq_accp == request.user %}
+		<form method="post" action="{% url 'friends_accp' user.id %}">
+			{% csrf_token %}
+			<input type="hidden" name="friends" value="Yes">
+			{% if freq_sent.friends == 'Yes' %}
+				<span class="btn btn-info">Friends</span>
+			{% elif freq_sent.freq == 'Yes' %}
+				<button type="submit" class="btn btn-primary">Accept Request</button>
+			{% endif %}
+		</form>
+		{% else %}
+		<form method="post" action="{% url 'friends_req' user.id %}">
+			{% csrf_token %}
+			<!-- {{freq_form}} -->
+			<input type="hidden" name="freq" value="Yes">
+			{% if freq_sent.friends == 'Yes' %}
+				<span class="btn btn-info">Friends</span>
+			{% elif freq_sent.freq == 'Yes' %}
+				<span class="btn btn-primary">Sent Request</span>
+			{% else %}
+				<button class="btn btn-info" type="submit">Send Friend Req</button>
+			{% endif %}
+		</form>
+		{% endif %}
 	</div>
 	
 </div>
