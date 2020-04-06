@@ -420,9 +420,11 @@ class SearchTest(ProfileUsersReadFormTest):
 		self.new_user = baker.make(SnetUser)
 		self.new_user.first_name = self.new_user.truncate()
 		self.new_user.save()
-		data = {'search':self.new_user.truncate()}
+		data = {'search':self.new_user.truncate().capitalize()}
 		self.resp = self.client.post(reverse('search'), data=data)
-		# Testing the domain page url redirect post authentication
+		self.feed = self.client.get(reverse('feed:feed'))
+		
+		# Testing the domain page/home page url redirect post authentication
 		self.home_page = self.client.get(reverse('register'), follow=True)
 
 	def test_search_url(self):
@@ -430,9 +432,31 @@ class SearchTest(ProfileUsersReadFormTest):
 		self.assertIsInstance(self.resp.context['user'], SnetUser)
 		self.assertContains(self.home_page, 'LogOut')
 		self.assertEqual(self.home_page.status_code, 200)
+		# print(self.new_user)
 		self.assertContains(self.resp, self.new_user)
 
+	def test_feed_url(self):
+		# self.assertContains(self.feed, 'friends')
+		# print(self.new_user.friend_request)
+		self.assertTrue(self.new_user.friend_request)
 
+@tag('fr_recieved')
+class FriendsTest(ProfileUsersReadFormTest):
+
+	def setUp(self):
+		super().setUp()
+		self.new_user = baker.make(SnetUser)
+		self.frd_req = self.client.post(reverse('friends_req', args=(self.new_user.id,)), data={'freq':'Yes'})
+		obj = self.new_user.friend_request()[0]
+		obj.friends='Yes'
+		obj.save()
+		self.frd_url_resp = self.client.post(reverse('friend_req_received'))
+
+	def test_frd_url(self):
+		self.assertEqual(self.frd_url_resp.status_code, 200)
+		self.assertTrue(self.obj.friends())
+		# print(self.obj.friend_request())
+		self.assertTrue(self.frd_url_resp.context.get('friends'))
 
 
 		

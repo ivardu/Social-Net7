@@ -31,6 +31,9 @@
 			    </ul>
 			    <ul class="navbar-nav ml-auto">
 			    	<li class="nav-item">
+			    		<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><span class="btn btn-sm btn-info">Friend Requests {{request.user.friend_request.count}}</span></a>
+			    	</li>
+			    	<li class="nav-item">
 			    		<a class="nav-link text-white" href="{% url 'profile' %}">
 			    			{% if request.user.fname_empty%}
 			    			<span class="btn btn-sm btn-success"><img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="21"> {{request.user.truncate|title}}</span></a>

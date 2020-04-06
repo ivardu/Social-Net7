@@ -10,7 +10,7 @@ from feed.forms import FeedForm, LikesForm, CommentsForm
 from feed.models import Feed, Likes, Comments
 from users.models import SnetUser
 
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView
 
 
@@ -101,5 +101,13 @@ class MyPostList(ListView):
 		context = super().get_context_data(**kwargs)
 		context['comment_form'] = CommentsForm
 		return context
+
+
+class FeedEditView(UpdateView):
+	model = Feed
+	template_name = 'feed/feed_edit.html'
+	fields = ['post_info','image']
+
+
 
 

@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from users.models import SnetUser
 from PIL import Image
 
@@ -30,6 +31,9 @@ class Feed(models.Model):
 
 	def likes_count(self):
 		return self.likes_set.filter(likes=1).count()
+
+	def get_absolute_url(self):
+		return reverse('feed:feed')
 
 
 class Likes(models.Model):

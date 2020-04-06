@@ -2,7 +2,9 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import Q
 from users.managers import CustomUserManager
+
 
 class SnetUser(AbstractUser):
 	username = None
@@ -29,6 +31,12 @@ class SnetUser(AbstractUser):
 			return True
 		else:
 			return False
+
+	def friend_request(self):
+		return Friends.objects.filter(freq_accp_id=self.id).filter(friends='No')
+
+	def friends(self):
+		return Friends.objects.filter(Q(freq_accp_id=self.id)|Q(freq_usr_id=self.id)).filter(friends='Yes')
 
 
 def profile_img_directory(instance, filename):

@@ -266,11 +266,17 @@ class MyPostsViewsTest(TestCase):
 		self.assertContains(self.resp, 'comments')
 
 
-@tag('header_freinds')
-class HeaderFriendsTest(MyPostViewsTest):
+@tag('feed_edit')
+class FeedEditTest(CommentModelTest):
 
 	def setUp(self):
 		super().setUp()
+		self.resp = self.client.post(reverse('feed:feed_edit', args=(self.feed.id,)), {'post_info':'Kuyil data'})
+
+	def test_edit_feed_model(self):
+		self.feed.post_info='Kuyil data'
+		self.feed.save()
+		self.assertEqual(self.feed.post_info, 'Kuyil data')
 		
 
 

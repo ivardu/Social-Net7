@@ -1,0 +1,50 @@
+{% extends 'users/base.html' %}
+{% block body %}
+<div class="container">
+	<div class="container shadow-lg w-50">
+		<div class="container mt-2 p-3">
+				<span>Friends</span>
+				<hr>	
+		</div>
+		<div class="p-1">	
+			<table class="table table-borderless">	
+				<tbody>	
+					{% if frend_req_list %}
+						{% for friend in frend_req_list %}
+							<tr>	
+								<form method="post" action="{% url 'friends_accp' friend.freq_usr.id %}">	
+									{% csrf_token %}
+									<td>	
+										<a href="{% url 'rprofile' friend.freq_usr.id %}"><img class="img-thumbnail rounded-circle" src="{{friend.freq_usr.profile.image.url}}" width="30" height="30">{{friend.freq_usr|title}}</a>
+									</td>
+									<td>
+										<input type="hidden" name="friends" value="Yes">
+										<button class="btn btn-sm btn-info" type="submit">Accept</button>
+									</td>
+								</form>
+							</tr>
+						{% endfor %}
+					{% endif %}
+					{% if friends %}
+							{% for friend_obj in friends %}
+								<tr>
+									<td>
+										{% if request.user == friend_obj.freq_usr %}
+										<a href="{% url 'rprofile' friend_obj.freq_accp.id %}"><img class="img-thumbnail rounded-circle" src="{{friend_obj.freq_accp.profile.image.url}}" width=30 height=30>{{friend_obj.freq_accp|title}}</a>	
+										{% elif request.user == friend_obj.freq_accp %}
+										<a href="{% url 'rprofile' friend_obj.freq_usr.id %}"><img class="img-thumbnail rounded-circle" src="{{friend_obj.freq_usr.profile.image.url}}" width=30 height=30>{{friend_obj.freq_usr|title}}</a>
+										{% endif %}
+									</td>	
+									<td>
+
+										<button class="btn btn-sm btn-success">Friends</button>	
+									</td>
+								</tr>
+							{% endfor %}
+					{% endif %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock body %}

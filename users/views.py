@@ -87,6 +87,7 @@ def friends_req(request, id):
 			freq_obj.freq_accp = accp_user
 			freq_obj.freq_usr = req_user
 			freq_obj.save()
+			# print(freq_obj.freq_usr, freq_obj.freq_accp)
 		return HttpResponseRedirect(reverse('rprofile', args=(accp_user.id,)))
 
 
@@ -108,7 +109,7 @@ def friends_accp(request, id):
 		return HttpResponseRedirect(reverse('rprofile', args=(req_user.id,)))
 
 	# return HttpResponse('Fail')
-
+@login_required
 def search(request):
 	result = request.POST.get('search')
 	no_result = 'No Results Found'
@@ -116,3 +117,11 @@ def search(request):
 		name_list = SnetUser.objects.filter(Q(first_name=result)|Q(last_name=result)|Q(email__contains=result))
 
 	return render(request, 'users/search.html', locals())
+
+@login_required
+def friend_req_received(request):
+	# print(request.user.friend_request())
+	frend_req_list = request.user.friend_request()
+	friends = request.user.friends()
+	# print(frend_req_list, type(request.user.friend_request()))
+	return render(request, 'users/friends.html', locals())

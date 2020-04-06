@@ -31,7 +31,8 @@ urlpatterns = [
     path('rprofile/<int:id>/', user_views.rprofile, name='rprofile'),
     path('friends_req/<int:id>/', user_views.friends_req, name='friends_req'),
     path('friends_accp/<int:id>/',user_views.friends_accp, name='friends_accp'),
-    path('search/',user_views.search, name='search')
+    path('search/',user_views.search, name='search'),
+    path('friends', user_views.friend_req_received, name='friend_req_received')
 ]
 
 if settings.DEBUG:
