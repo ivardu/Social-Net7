@@ -9,5 +9,6 @@ urlpatterns = [
 	path('comments/<int:id>/', views.comments, name='comments'),
 	path('myposts/<int:pk>/', views.MyPostList.as_view(), name='myposts'),
 	path('edit/<int:pk>/',views.FeedEditView.as_view(),name='feed_edit'),
+	path('del/<int:pk>/',views.FeedDeleteView.as_view(), name='feed_del'),
 ]
 

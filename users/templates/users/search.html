@@ -3,20 +3,28 @@
 <li class="nav-item">
     <form class="form-inline my-2 my-lg-0" method="post" action="{% url 'search' %}">
     	{% csrf_token %}
-      <input type="search" class="form-control mr-sm-2" name="search" placeholder="Search People, Friends" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      <input type="search" class="form-control-sm mr-sm-2" name="search" placeholder="Search People, Friends" aria-label="Search">
+      <button class="btn btn-sm btn-success my-2 my-sm-0" type="submit">Search</button>
     </form>
 </li>
 {% endblock search %}
 {% block body %}
 <div class="containter">
-	<div class="container shadow-lg p-3 mt-2 w-50">
+	<div class="container shadow-lg p-3 mt-2 col-md-4">
 		<ul class="list-group list-group-flush">
 			{% if name_list %}
+				<h6 class="small">Results found</h6>
+				<hr class="p-0 m-0">
 				{% for user in name_list %}
-					<li class="list-group-item">
-						<small>{{user.email}}</small>
-					</li>
+					{% if user == request.user %}
+						<li class="list-group-item">
+							<a class="btn btn-sm btn-info" href="{% url 'profile'%}"><img class="img-thumbnail rounded-circle" src="{{user.profile.image.url}}" width=30 height=30> {{user.truncate|title}}</a>
+						</li>
+					{% else %}
+						<li class="list-group-item">
+							<a class="btn btn-sm btn-info" href="{% url 'rprofile' user.id %}"><img class="img-thumbnail rounded-circle" src="{{user.profile.image.url}}" width=30 height=30> {{user.truncate|title}}</a>
+						</li>
+					{% endif %}
 				{% endfor %}
 			{% elif no_result %}
 				<li class="list-group-item">

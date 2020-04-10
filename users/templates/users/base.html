@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,13 +8,12 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
- 	<!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
 
 </head>
 <body>
 	<!-- Header or Nav Bar -->
 	<div>
-		<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+		<nav class="navbar navbar-expand-md navbar-dark bg-dark pt-0 pb-0">
 		 	<a class="navbar-brand" href="{% url 'feed:feed' %}">Social Net7</a>
 			<div class="collapse navbar-collapse" id="navbarText">
 			{% if user.is_authenticated %}	
@@ -25,21 +25,35 @@
 			        <a class="nav-link text-white" href="{% url 'feed:myposts' request.user.id %}">MyPosts</a>
 			      </li>
 			    </ul>
-			    <ul class="navbar-nav mr-auto">
-			    	{% block search %}
-			    	{% endblock search%}
+			    <ul class="navbar-nav mx-auto">
+					<li class="nav-item">
+					    <form method="post" action="{% url 'search' %}">
+					    	{% csrf_token %}
+						    <div class="input-group input-group-sm">
+						      	<input type="search" class="form-control" name="search" placeholder="Search People, Friends" aria-label="Search">
+						      	<div class="input-group-append">
+						     		<button class="btn btn-sm btn-success my-2 my-sm-0" type="submit">Search</button>
+						      	</div>
+						    </div>
+					    </form> 
+					</li>
 			    </ul>
 			    <ul class="navbar-nav ml-auto">
 			    	<li class="nav-item">
-			    		<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><span class="btn btn-sm btn-info">Friend Requests {{request.user.friend_request.count}}</span></a>
+			    		{% if request.user.friend_request.count == 0 %}
+			    			<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><img src="{% static 'components/empty_heart.png' %}" style="{background-color: #FFFFFF}" width="30" height="30"></a>
+			    		{% else %}
+			    			<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><img src="{% static 'components/filled_love.png' %}" width="30" height="30"></a>
+			    		{% endif %}
 			    	</li>
-			    	<li class="nav-item">
-			    		<a class="nav-link text-white" href="{% url 'profile' %}">
-			    			{% if request.user.fname_empty%}
-			    			<span class="btn btn-sm btn-success"><img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="21"> {{request.user.truncate|title}}</span></a>
-			    			{% else %}
-			    			<span class="btn btn-sm btn-success"><img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="21"> {{request.user.first_name|title}}</span></a>
-			    			{% endif %}
+			    	<li class="nav-item">	
+		    			{% if request.user.fname_empty%}
+		    			<a class="nav-link text-white" href="{% url 'profile' %}">
+		    			<img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="25"><span class="small">{{request.user.truncate|title}}</span></a>
+		    			{% else %}
+		    			<a class="nav-link text-white" href="{% url 'profile' %}">
+		    			<img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="25">{{request.user.first_name|title}}</a>
+		    			{% endif %}
 
 				    </li>
 				    <li class="navbar-nav ml-auto">
@@ -79,11 +93,80 @@
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  	 	<script>
+	<script>
   	$( function() {
     	$( "#datepicker" ).datepicker({dateFormat: "dd/mm/yy", });
   	} );
-  	</script>
+	</script>
+	<script type="text/JavaScript">
+	// Handling the comment section with the JQuery and Ajax
+	$(document).ready(function(){
+		function updateText(btn, count, verb) {
+			btn.text(count)	
+		}
+		$('.likes_form').on('submit', function (event){
+			// console.log('Likes working')
+			event.preventDefault();
+			var this_ = $("span[class='likes_value small']", this);
+			$.ajax({
+				type:$(this).attr('method'),
+				url : $(this).attr('likes-url'),
+				data : $(this).serialize(),
+				success: function(data){
+					var count;
+					// console.log(data.count)
+					count = data.count
+					updateText(this_, count, "Likes")
+				},
+				error: function(data) {
+					alert('something wrong')
+				}
+			});
+		});
+	});
+	// Handling the comment section with the JQuery and Ajax
+	$(document).ready(function(){
+		$('.comment_form').on('submit', function(event){
+			// console.log('working')
+			var this_c = $("input[type=text]",this)
+			event.preventDefault();
+			$.ajax({
+				type:$(this).attr('method'),
+				url: $(this).attr('comment-url'),
+				data: $(this).serialize(),
+				success: function(data){
+					var url_val;
+					url_val = data.url_val
+					$(this_c).val("");
+					// if logged in user and commenting user same
+					if(data.value){
+						if(data.fname_empty){
+							$(data.id).append("<li class='list-group-item p-0'><small><a href='"+url_val+"'>"+data.user+"</a>"+" "+data.comments+"</small></li>")
+							console.log("<li class='list-group-item p-0'><small><a href="+url_val+">"+data.user+"</a>"+data.comments+"</small></li>")
+						}
+						// Updating the Comment Username as per the first_name saved in DB
+						else{
+							$(data.id).append("<li class='list-group-item p-0'><small><a href="+url_val+">"+data.user+"</a>"+data.comments+"</small></li>")
+						}
+					}
+					// if the logged in user and commenting user are different
+					else{
+						console.log("in else")
+						if(data.fname_empty){
+							$(data.id).append("<li class='list-group-item p-0'><small><a href="+url_val+">"+ data.user +"</a>"+data.comments+"</small></li>")
+						}
+						// Updating the Comment Username as per the first_name saved in DB
+						else{
+							$(data.id).append("<li class='list-group-item p-0'><small><a href="+url_val+">"+ data.user +"</a>"+data.comments+"</small></li>")
+						}
+					}
+				},
+			});
+		});
+	});
+	</script>
+	{% block script %}
+	{% endblock script %}
 
 </body>
 </html>

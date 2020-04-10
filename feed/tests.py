@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.conf import settings 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.files import File
+from django.contrib import auth
 from django.test import tag
 from feed.models import Feed, Likes, Comments
 from feed import models
@@ -12,6 +13,7 @@ from users.forms import SignUpForm
 import os
 from unittest import mock
 from io import BytesIO
+import datetime
 
 from model_bakery import baker
 
@@ -205,9 +207,16 @@ class LikeModelTest(TestCase):
 class CommentModelTest(TestCase):
 
 	def setUp(self):
-		self.feed = baker.make(Feed, image=image['image'])
+		self.test = {
+				'email':'ravi_new@gmail.com',
+				'password1':'Daddy@007',
+				'password2':'Daddy@007'
+		}
+		self.obj = SnetUser.objects.create(email=self.test['email'])
+		self.obj.set_password(self.test['password1'])
+		self.obj.save()
+		self.feed = baker.make(Feed, image=image['image'], user=self.obj)
 		self.coment = baker.make(Comments, feed=self.feed)
-		# print(self.coment)
 		self.user = baker.make(SnetUser)
 		self.comment = Comments.objects.get(pk=1)
 		self.data = {
@@ -215,55 +224,46 @@ class CommentModelTest(TestCase):
 			'user':self.user,
 			'feed':self.feed
 		}
-		
-		self.test = {
-				'email':'ravi_new@gmail.com',
-				'password1':'Daddy@007',
-				'password2':'Daddy@007'
-		}
-		s_form = SignUpForm(data=self.test)
-		# # # # form = SignUpForm(self.data)
-		# # # print(form.is_valid())
-		s_form.save()
 		resp = self.client.login(username=self.test['email'], password=self.test['password1'])
-		# print(SnetUser.object.all())
 		self.comm_resp = self.client.post(reverse('feed:comments', args=(self.feed.id,)), {'comments':'Hello World'})
 
+
 	def test_comment_model(self):
+		print('Comment 1')
 		self.assertIsInstance(self.comment, Comments)
-		# self.assertTrue(self.feed in self.comment)
 
 	def test_commet_form_valid(self):
+		print('Comment 2')
 		form = CommentsForm(data=self.data)
 		self.assertTrue(form.is_valid())
 
 	def test_comment_form_invalid(self):
+		print('Comment 3')
 		form = CommentsForm(data={})
 		self.assertFalse(form.is_valid())
 
 	def test_comment_status_code(self):
+		print('Comment 4')
 		self.assertEqual(self.comm_resp.status_code, 302)
 
 	def test_comment_model_object(self):
+		print('Comment 5')
 		comment = Comments.objects.get(comments='Hello World')
 		self.assertEqual('Hello World',comment.comments)
 
 @tag('myposts')
-class MyPostsViewsTest(TestCase):
-
-	def setUp(self):
-		self.user = baker.make(SnetUser)
-		self.feed = baker.make(Feed, user=self.user, image=image['image'])
-		self.resp = self.client.get(reverse('feed:myposts', args=(self.user.id,)))
-
-
+class MyPostsViewsTest(CommentModelTest):
+	@tag('only_myposts')
 	def test_myposts_response(self):
-		# print(self.user.feed_set.all())
+		self.resp = self.client.get(reverse('feed:myposts', args=(self.obj.id,)))
 		self.assertEqual(self.resp.status_code, 200)
-		self.assertContains(self.resp, self.user.truncate())
-		self.assertContains(self.resp, image['image'])
-		# print(self.resp.context['comment_form'])
+		self.assertContains(self.resp, self.obj.truncate())
+		self.assertContains(self.resp, "logged_out")
 		self.assertContains(self.resp, 'comments')
+
+	def test_url_check(self):
+		self.resp = self.client.get(reverse('feed:myposts', args=(self.obj.id,)))
+		self.assertContains(self.resp, 'Search')
 
 
 @tag('feed_edit')
@@ -271,13 +271,36 @@ class FeedEditTest(CommentModelTest):
 
 	def setUp(self):
 		super().setUp()
-		self.resp = self.client.post(reverse('feed:feed_edit', args=(self.feed.id,)), {'post_info':'Kuyil data'})
+		self.resp = self.client.post(reverse('feed:feed_edit', args=(self.feed.id,)), {'post_info':'New data'})
 
 	def test_edit_feed_model(self):
-		self.feed.post_info='Kuyil data'
-		self.feed.save()
-		self.assertEqual(self.feed.post_info, 'Kuyil data')
+		self.feed.refresh_from_db()
+		self.assertEqual(self.feed.post_info, 'New data')
 		
+@tag('feed_del')
+class FeedDeleteTest(CommentModelTest):
+
+	def setUp(self):
+		super().setUp()
+
+	@tag('fd1')
+	def test_feed_exits(self):
+		self.ff = self.client.get(reverse('feed:feed'))
+		# print(self.feed_feed)
+		self.assertTrue(Feed.objects.filter(id=self.feed.id))
+		self.assertContains(self.ff, 'Del')
+		# user = auth.get_user(self.client)
+		# print(user.is_authenticated)
+
+	@tag('fd1')
+	def test_feed_delete(self):
+		self.feed_delete = self.client.post(reverse('feed:feed_del', args=(self.feed.id,)))
+		self.assertEqual(self.feed_delete.status_code, 302)
+
+
+	
+
+
 
 
 

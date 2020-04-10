@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.utils.translation import ugettext, ugettext_lazy as _, ugettext_noop 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -10,7 +10,7 @@ from feed.forms import FeedForm, LikesForm, CommentsForm
 from feed.models import Feed, Likes, Comments
 from users.models import SnetUser
 
-from django.views.generic.edit import FormView, UpdateView
+from django.views.generic.edit import FormView, UpdateView, DeleteView
 from django.views.generic import ListView
 
 
@@ -19,13 +19,14 @@ def feed(request):
 	feed = Feed.objects.all()
 	feed_form = FeedForm()
 	comment_form = CommentsForm()
-	paginator = Paginator(feed, 5)
 	page = request.GET.get('page', 1)
+	paginator = Paginator(feed, 5)
+	
 	try:
-		page_obj = paginator.get_page(page)
+		page_obj = paginator.page(page)
 
 	except PageNotAnInteger:
-		page_obj = paginator.get_page(1)
+		page_obj = paginator.page(1)
 
 	except EmptyPage:
 		page_obj = paginator.page(paginator.num_pages)
@@ -51,7 +52,6 @@ def likes(request, id):
 	try:
 		feed = Feed.objects.get(pk=id)
 		user_liked = Likes.objects.filter(user=request.user).filter(feed=feed)
-		# print(len(user_liked))
 	except Exception as e:
 		print(e)
 
@@ -63,10 +63,18 @@ def likes(request, id):
 			likes_obj.feed = feed
 			likes_obj.user = request.user
 			likes_obj.save()
-			# print(likes_obj.feed)
-			return HttpResponseRedirect(reverse('feed:feed'))
+			data = {
+				'count': feed.likes_set.count()
+			}
+			# print('working')
+			return JsonResponse(data)
 
-	return HttpResponseRedirect(reverse('feed:feed'))
+			# return HttpResponseRedirect(reverse('feed:feed'))
+	else:
+		print('Not working')
+
+	# return HttpResponseRedirect(reverse('feed:feed'))
+
 @login_required
 def comments(request, id):
 	try:
@@ -81,10 +89,30 @@ def comments(request, id):
 			comment_obj.user = request.user
 			comment_obj.feed = feed
 			comment_obj.save()
+			value = (request.user == comment_obj.user)
+			# print(value)
+			def return_value(value):
+				if value:
+					return reverse('profile')
+				return reverse('rprofile', args=(comment_obj.user.id,))
+			# ret_val = return_value(value)	
+			print(comment_obj.comments, comment_obj.user.truncate(),comment_obj.feed.id, comment_obj.user.fname_empty())
+			data = {
+				'comments':comment_obj.comments,
+				'value' : value,
+				'user':comment_obj.user.truncate().capitalize(),
+				'feed_id': comment_obj.feed.id,
+				'fname_empty':comment_obj.user.fname_empty(),
+				'url_val': return_value(value),
+				'id':'#Feed'+str(comment_obj.feed.id),
+			}
+			# item.user.truncate|title
+			# return HttpResponseRedirect(reverse('feed:feed'))
+			return JsonResponse(data)
+	else:
+		print('Comments Not Working')
 
-			return HttpResponseRedirect(reverse('feed:feed'))
-
-	return HttpResponseRedirect(reverse('feed:feed'))
+	# return HttpResponseRedirect(reverse('feed:feed'))
  
 @method_decorator(login_required, name='dispatch')
 class MyPostList(ListView):
@@ -102,12 +130,17 @@ class MyPostList(ListView):
 		context['comment_form'] = CommentsForm
 		return context
 
-
+@method_decorator(login_required, name='dispatch')
 class FeedEditView(UpdateView):
 	model = Feed
 	template_name = 'feed/feed_edit.html'
 	fields = ['post_info','image']
 
+@method_decorator(login_required, name='dispatch')
+class FeedDeleteView(DeleteView):
+	model = Feed
+	template_name = 'feed/feed_del.html'
+	success_url = reverse_lazy('feed:feed')
 
 
 
