@@ -115,6 +115,7 @@ def search(request):
 	no_result = 'No Results Found'
 	if result:
 		name_list = SnetUser.objects.filter(Q(first_name=result)|Q(last_name=result)|Q(email__contains=result))
+		# print(name_list)
 
 	return render(request, 'users/search.html', locals())
 

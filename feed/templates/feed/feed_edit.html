@@ -6,7 +6,8 @@
 		{% csrf_token %}
 		{{form|crispy}}
 		<div align="center">
-		<input class="btn btn-warning" type="submit" name="Update" value="Update">		
+			<a class="btn btn-sm btn-warning" href="{% url 'feed:feed' %}">Cancel</a>
+			<input class="btn btn-sm btn-success" type="submit" name="Update" value="Update">		
 		</div>
 	</form>
 </div>

@@ -5,7 +5,8 @@
 <div class="container col-md-5 shadow-lg p-3 ">
 	<form method='post' enctype='multipart/form-data'>
 		{% csrf_token %}
-		{{feed_form|crispy }}
+
+				{{feed_form|crispy}}
 		<div align="center">
 			<input class="btn btn-primary w-100" type="submit" name="submit" value="Post">
 		</div>
@@ -91,21 +92,31 @@
 					</ul>
 				</div>
 			</div>
+			<!-- Feed edit -->
 			<div class="col-md-1">
 				{% if item.user == request.user %}
-				 <a class="small" href="{% url 'feed:feed_edit' item.id %}">Edit</a>
-				 <a class="small" href="{% url 'feed:feed_del' item.id %}">Del</a>
+				<div class="dropleft">
+					<a href='' class="test text-decoration-none" id="dropdownMenuButton" data-toggle="dropdown">
+					</a>
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					 <a class="dropdown-item small" href="{% url 'feed:feed_edit' item.id %}">Edit</a>
+					 <a class="dropdown-item small" href="{% url 'feed:feed_del' item.id %}">Delete</a>
+					</div>
+				 </div>
 				{% endif %}
 			</div>
 		</div>
 	{% endfor %}
 </div>
 <div class="container mt-2 p-3" align="center">
+{% if page_obj %}
 		{% if page_obj.has_previous %}
 				<small><a class="btn btn-outline-info" href="?page=1">Prev</a></small>
 		{% endif %}
 		{% for num in paginator.page_range %}
-			{% if num == page_obj.number %}
+			{% if num == page_obj.number and paginator.num_pages == 1 %}
+				<small><a class="btn btn-secondary" href="#"><<</a> <a class="btn btn-info" href="?page={{num}}">{{num}}</a> <a class="btn btn-secondary" href="#">>></a></small>
+			{% elif num == page_obj.number %}
 				<small><a class="btn btn-info" href="?page={{num}}">{{num}}</a></small>
 			{% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'+3' %}
 				<small><a class="btn btn-outline-info" href="?page={{num}}">{{num}}</a></small>
@@ -114,6 +125,7 @@
 		{% if page_obj.has_next %}
 			<small><a class="btn btn-outline-info" href="?page={{paginator.num_pages}}">Last</a></small>
 		{% endif %}
+{% endif %}
 </div>
 
 {% endblock body %}

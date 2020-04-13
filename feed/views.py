@@ -96,7 +96,7 @@ def comments(request, id):
 					return reverse('profile')
 				return reverse('rprofile', args=(comment_obj.user.id,))
 			# ret_val = return_value(value)	
-			print(comment_obj.comments, comment_obj.user.truncate(),comment_obj.feed.id, comment_obj.user.fname_empty())
+			# print(comment_obj.comments, comment_obj.user.truncate(),comment_obj.feed.id, comment_obj.user.fname_empty())
 			data = {
 				'comments':comment_obj.comments,
 				'value' : value,

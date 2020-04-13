@@ -1,7 +1,13 @@
 {% extends 'users/base.html' %}
+{% load static %}
 {% block body %}
-<div class="containter w-50 shadow mx-auto p-3">
-	<h6>You have been loggedout login again.. !!
-	<a href="{% url 'login' %}">login</a></h6>
+<div class="containter col-md-4 shadow mx-auto p-3 mt-2">
+	<div class="col-sm-11 mx-auto">
+			<img src="{% static 'components/logged_out.jpg' %}" width="400" height="400">
+		<div class="p-2">
+			<h6>You have been loggedout <a class="btn btn-sm btn-success" href="{% url 'login' %}">login</a> again..</h6>
+		</div>	
+		
+	</div>
 </div>
 {% endblock body %}

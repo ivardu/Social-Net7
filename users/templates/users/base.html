@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
 
 </head>
 <body>
@@ -146,18 +147,20 @@
 						}
 						// Updating the Comment Username as per the first_name saved in DB
 						else{
-							$(data.id).append("<li class='list-group-item p-0'><small><a href="+url_val+">"+data.user+"</a>"+data.comments+"</small></li>")
+							console.log('first else')
+							$(data.id).append("<li class='list-group-item p-0'><small><a href='"+url_val+"''>"+data.user+"</a>"+" "+data.comments+"</small></li>")
 						}
 					}
 					// if the logged in user and commenting user are different
 					else{
 						console.log("in else")
 						if(data.fname_empty){
-							$(data.id).append("<li class='list-group-item p-0'><small><a href="+url_val+">"+ data.user +"</a>"+data.comments+"</small></li>")
+							$(data.id).append("<li class='list-group-item p-0'><small><a href=/"+url_val+"''>"+ data.user +"</a>"+" "+data.comments+"</small></li>")
 						}
 						// Updating the Comment Username as per the first_name saved in DB
 						else{
-							$(data.id).append("<li class='list-group-item p-0'><small><a href="+url_val+">"+ data.user +"</a>"+data.comments+"</small></li>")
+							console.log('second else')
+							$(data.id).append("<li class='list-group-item p-0'><small><a href='"+url_val+"''>"+ data.user +"</a>"+" "+data.comments+"</small></li>")
 						}
 					}
 				},

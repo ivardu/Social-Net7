@@ -15,10 +15,13 @@ from model_bakery import baker
 from unittest.mock import patch
 from users.signals import create_profile
 
+from feed.models import Feed
+
 import os
 
 User = get_user_model()
-
+file = open(os.path.join(BASE_DIR, 'logged_out.jpg'), 'rb')
+image = SimpleUploadedFile()
 def login_func(data={}):
 
 	c = Client()
@@ -166,6 +169,7 @@ class UsersViewsTest(TestCase):
 
 	# Valid Form Data 
 
+@tag('users_urls')
 class UsersURLSTest(TestCase):
 	# Users URL's Tests
 	
@@ -205,7 +209,7 @@ class UsersURLSTest(TestCase):
 		logout_resp = self.client.get(reverse('logout'))
 		self.assertTemplateUsed(logout_resp, 'users/logout.html')
 		self.assertEqual(logout_resp.status_code, 200)
-		self.assertContains(logout_resp, 'You have been loggedout login again.. !!')
+		self.assertContains(logout_resp, 'You have been loggedout')
 
 
 class UsersFormsTest(TestCase):
@@ -329,7 +333,7 @@ class UserProfileTest(TestCase):
 		self.assertTrue(profile_img_directory(self.user.profile, self.user.profile.image))
 
 	def test_profile_data_saved_or_not(self):
-		self.assertEqual(self.user.profile.image, 'female.jpg')
+		self.assertEqual(self.user.profile.image, 'default_avatar_profile.jpg')
 
 
 	def test_profile_resp_data(self):
@@ -420,32 +424,33 @@ class SearchTest(ProfileUsersReadFormTest):
 		self.new_user = baker.make(SnetUser)
 		self.new_user.first_name = self.new_user.truncate()
 		self.new_user.save()
-		data = {'search':self.new_user.truncate().capitalize()}
-		self.resp = self.client.post(reverse('search'), data=data)
+		data = {'search':self.new_user.truncate()}
+		self.search_resp = self.client.post(reverse('search'), data=data)
 		self.feed = self.client.get(reverse('feed:feed'))
 		
 		# Testing the domain page/home page url redirect post authentication
 		self.home_page = self.client.get(reverse('register'), follow=True)
 
 	def test_search_url(self):
-		self.assertEqual(self.resp.status_code, 200)
-		self.assertIsInstance(self.resp.context['user'], SnetUser)
+		self.assertEqual(self.search_resp.status_code, 200)
+		self.assertIsInstance(self.search_resp.context['user'], SnetUser)
 		self.assertContains(self.home_page, 'LogOut')
 		self.assertEqual(self.home_page.status_code, 200)
-		# print(self.new_user)
-		self.assertContains(self.resp, self.new_user)
+		# print(self.search_resp.content)
+		self.assertContains(self.search_resp, 'Results found')
 
 	def test_feed_url(self):
 		# self.assertContains(self.feed, 'friends')
 		# print(self.new_user.friend_request)
 		self.assertTrue(self.new_user.friend_request)
 
-@tag('fr_recieved')
+@tag('fr_received')
 class FriendsTest(ProfileUsersReadFormTest):
 
 	def setUp(self):
 		super().setUp()
 		self.new_user = baker.make(SnetUser)
+		self.feed1 = baker.make(Feed, user=self.new_user)
 		self.frd_req = self.client.post(reverse('friends_req', args=(self.new_user.id,)), data={'freq':'Yes'})
 		obj = self.new_user.friend_request()[0]
 		obj.friends='Yes'
@@ -457,6 +462,11 @@ class FriendsTest(ProfileUsersReadFormTest):
 		self.assertTrue(self.obj.friends())
 		# print(self.obj.friend_request())
 		self.assertTrue(self.frd_url_resp.context.get('friends'))
+
+
+	def test_frnd_read_only(self):
+		print(self.feed1)
+		
 
 
 		
