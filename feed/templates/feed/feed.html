@@ -1,11 +1,10 @@
 {% extends 'users/base.html' %}
 {% load crispy_forms_tags %}
-<!-- {% load static%} -->
+{% load static%}
 {% block body %}
 <div class="container col-md-5 shadow-lg p-3 ">
 	<form method='post' enctype='multipart/form-data'>
 		{% csrf_token %}
-
 				{{feed_form|crispy}}
 		<div align="center">
 			<input class="btn btn-primary w-100" type="submit" name="submit" value="Post">
@@ -14,6 +13,8 @@
 </div>
 <div class="container">
 	{% for item in page_obj %}
+		{% if item.user.id in request.user.frn_list_ids or item.user == request.user %}
+		<!-- <h1>{{item.id}}</h1> -->
 		<div class="row container shadow-lg p-2 mt-2 rounded w-50 mx-auto ">
 			<div class="col-md-2">
 				<img class="img-thumbnail rounded-circle" src="{{item.user.profile.image.url}}" width="50" height="50">
@@ -37,8 +38,14 @@
 					{% endif %}
 				{% endif %}
 				</div>
-				<div class="row">
+				<!-- Feed Post User Email  -->
+<!-- 				<div class="row">
 					<small>{{item.user.email}}</small>
+				</div> -->
+				<!--  Feed Post timeline  -->
+				<div class="row">
+					<h6 class="small">{{item.feed_post_time}}</h6>
+					<!-- <span class="small">{{item.date}}</span> -->
 				</div>
 				<!-- Feed post info or about the post -->
 				<div class="row mt-2 mb-1">
@@ -106,6 +113,7 @@
 				{% endif %}
 			</div>
 		</div>
+		{% endif %}
 	{% endfor %}
 </div>
 <div class="container mt-2 p-3" align="center">

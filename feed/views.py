@@ -21,7 +21,7 @@ def feed(request):
 	comment_form = CommentsForm()
 	page = request.GET.get('page', 1)
 	paginator = Paginator(feed, 5)
-	
+	# print('stage 1')
 	try:
 		page_obj = paginator.page(page)
 
@@ -33,20 +33,19 @@ def feed(request):
 
 	if request.method == 'POST':
 		feed_form = FeedForm(request.POST, request.FILES)
+		# print('stage 2')
 		if feed_form.is_valid():
 			feed_obj = feed_form.save(commit=False)
 			feed_obj.user = request.user
 			feed_obj.save()
+			# print('success')
 			return HttpResponseRedirect(reverse('feed:feed'))
-	# else:
-		# likes = feed.likes_set.filter(likes=1).count()
+		else:
+			print(feed_form.errors)
 
 	return render(request, 'feed/feed.html', locals())
 	# return HttpResponse('Whats happening')
 
-# class Feed(FormView):
-# 	form_class = FeedForm
-# 	template_name = 'feed/feed.html'
 @login_required
 def likes(request, id):
 	try:

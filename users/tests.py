@@ -20,15 +20,13 @@ from feed.models import Feed
 import os
 
 User = get_user_model()
-file = open(os.path.join(BASE_DIR, 'logged_out.jpg'), 'rb')
-image = SimpleUploadedFile()
-def login_func(data={}):
 
+
+def login_func(data={}):
 	c = Client()
 	signup_url = reverse('register')
 	signup_response = c.post(signup_url, data, follow=True)
 	# print(Profile.objects.all())
-
 
 	return (signup_url,signup_response)
 
@@ -449,23 +447,76 @@ class FriendsTest(ProfileUsersReadFormTest):
 
 	def setUp(self):
 		super().setUp()
+		file = open(os.path.join(settings.BASE_DIR, 'logged_out.jpg'), 'rb')
+		image = SimpleUploadedFile(name=file.name, content=file.read(), content_type='image/jpeg')
 		self.new_user = baker.make(SnetUser)
-		self.feed1 = baker.make(Feed, user=self.new_user)
+		self.other_user = baker.make(SnetUser)
+		self.feed1 = baker.make(Feed, user=self.new_user, image=image)
 		self.frd_req = self.client.post(reverse('friends_req', args=(self.new_user.id,)), data={'freq':'Yes'})
 		obj = self.new_user.friend_request()[0]
 		obj.friends='Yes'
 		obj.save()
 		self.frd_url_resp = self.client.post(reverse('friend_req_received'))
+		self.feed_home = self.client.get(reverse('feed:feed'))
 
 	def test_frd_url(self):
 		self.assertEqual(self.frd_url_resp.status_code, 200)
+		# Logged in user friends list
+		print(self.obj.frn_list_ids())
 		self.assertTrue(self.obj.friends())
 		# print(self.obj.friend_request())
 		self.assertTrue(self.frd_url_resp.context.get('friends'))
 
 
 	def test_frnd_read_only(self):
-		print(self.feed1)
+		# print(self.feed1)
+		# self.assertContainse()
+		self.assertContains(self.feed_home, self.feed1.post_info)
+
+
+@tag('pchange')
+class PasswordChangeViewTest(TestCase):
+
+	def setUp(self):
+		self.user = SnetUser.objects.create(email='ravi@gmail.com')
+		self.user.set_password('Testing@007')
+		self.user.save()
+		self.client.login(username='ravi@gmail.com', password='Testing@007')
+		self.pget_resp = self.client.get(reverse('pchange'))
+		
+
+	def test_pass_change(self):
+		self.ppost_resp = self.client.post(reverse('pchange'), {'old_password':'Testing@007', 'new_password1':'Daddy@007', 'new_password2':'Daddy@007'}, follow=True)
+		self.pc_login_resp = self.client.login(username='ravi@gmail.com', password='Daddy@007')
+		self.assertEqual(self.pget_resp.status_code, 200)
+		self.assertContains(self.pget_resp, 'password')
+		self.assertEqual(self.ppost_resp.status_code, 200)
+		#self.ppost_resp contains the login url response as we have set follow = true
+		self.assertContains(self.ppost_resp, 'successfully')
+		self.assertTrue(self.pc_login_resp)
+
+	# def test_pass_change_post_login(self):
+
+
+
+
+
+@tag('pass_reset')
+class PasswordRestTest(PasswordChangeViewTest):
+	def setUp(self):
+		super().setUp()
+		self.resp = self.client.get(reverse('pass_reset'))
+		self.pass_resp = self.client.post(reverse('pass_reset'), {'email':'ravi@gmail.com'})
+
+
+	def test_pass_reset(self):
+		self.assertEqual(self.resp.status_code, 200)
+		self.assertContains(self.resp, 'email')
+		self.assertEqual(self.pass_resp.status_code, 200)
+
+
+
+
 		
 
 

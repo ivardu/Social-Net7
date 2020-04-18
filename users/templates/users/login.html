@@ -7,6 +7,13 @@ Social Net7 - Login
 {% block sub_page %}
 	<div class="col-lg-4">
 		<div class="shadow-lg border rounded p-3">
+			{% if messages %}
+				{% for message in messages %}
+			<div class="alert alert-success">
+				<small class="">{{message}}</small>
+			</div>
+				{% endfor %}
+			{% endif %}
 			<div class="mx-auto">
 				<h1 class="header">Social Net7</h1>
 			</div>
@@ -14,8 +21,9 @@ Social Net7 - Login
 			<form method="post">
 				{% csrf_token %}
 				{{form|crispy}}
-				<div class="container" align="center">
+				<div class="container">
 				<input class="btn btn-success" type="submit" name="" value="Login">
+				<a class="text-primary" href="{% url 'pass_reset' %}">Forgot Password..?</a>
 				</div>
 			</form>
 		</div>

@@ -29,27 +29,15 @@ class FeedModelTest(TestCase):
 
 	def setUp(self):
 		# Initializing the Feed model with Model Baker 
-		try:
-			# image = mock.MagicMock(spec=File)
-			# image.name = 'Test_image'
-			self.feed = baker.make('Feed', image=image['image'])
+		self.file = open(os.path.join(settings.BASE_DIR, 'logged_out.jpg'), 'rb')
+		self.image = SimpleUploadedFile(name=self.file.name, content=self.file.read(), content_type='image/jpeg')
 
-		except Exception as e:
-			print(e)
-		 # image = mock.MagicMock(spec=File, name='Test_image')
-
-
-		# print(self.feed.image)
-		# pass
-		# if self.feed.image:
-		# 	print(True)
-		# else:
-		# 	print(False)
-		# self.client.login(username='Ramesh@gmail.com', password='') 
+		self.feed = baker.make('Feed', image=self.image)
 
 	def test_feed(self):
 		# Testing the Feed model data 
-		self.assertEqual(Feed.objects.count(),1)
+		# print(self.feed)
+		self.assertTrue(Feed.objects.count())
 		self.assertIsInstance(self.feed.user, SnetUser)
 
 	def test_feed_data_directory(self):
@@ -90,35 +78,48 @@ class FeedURLSTest(TestCase):
 		self.assertEqual(resp.status_code, 200)
 
 
-class FeedViewTest(TestCase):
+@tag('feed_view')
+class FeedViewTest(FeedModelTest):
 
 	def setUp(self):
-		file = open(os.path.join(settings.BASE_DIR, 'logged_out.jpg'),'rb')
+		super().setUp()
+		file = open(os.path.join(settings.BASE_DIR, 'logged_out_1.jpg'),'rb')
 		image = SimpleUploadedFile(name=file.name, content=file.read(), content_type='image/jpeg')
-		self.feed_url = reverse('feed:feed')
 		self.user = SnetUser.objects.create(email='Test@gmail.com', password='Testing@007')
 		self.user.set_password('Testing@007')
 		self.user.save()
+		self.feed = baker.make(Feed, image=self.image, user=self.user )
+		# self.feed_url = reverse('feed:feed')
 		self.data = {
 			'email':self.user.email,
 			'password':'Testing@007'
 		} 
 		self.feed_data = {
 			'post_info': 'Testing',
-			'image': image,
+			'image': file,
 			'user': self.user.id,
 		}
+		self.login_resp = self.client.login(email=self.data['email'], password=self.data['password'])
+		# print(self.feed_data['image'])
+		self.feed_post_data = self.client.post(reverse('feed:feed'), {
+			'post_info': 'Testing',
+			'image': image,
+			'user': self.user.id,
+		}, follow=True)
 
 	def test_feed_post_save(self):
-		self.client.login(email=self.data['email'], password=self.data['password'])
-		self.client.post(self.feed_url, data=self.feed_data)
 		# Testing Feed data saved or not
+		self.assertTrue(self.login_resp)
 		self.assertTrue(Feed.objects.filter(post_info='Testing'))
 		# print(Feed.objects.filter(post_info='Testing'))
 		# Testing Feedlist is passed to same template or not - checking first object of query set
 		feed_response = self.client.get(reverse('feed:feed'))
 		self.assertEqual(feed_response.context.get('feed')[0].user.email,'Test@gmail.com')
-		self.assertContains(feed_response, 'feed')
+		self.assertContains(feed_response, self.feed.post_info)
+
+	def test_feed_post_time(self):
+		# print(self.feed_post_data.content)
+		self.assertContains(self.feed_post_data,'ago')
 
 @tag('feed_data')
 class FeedFormTest(TestCase):
@@ -226,6 +227,7 @@ class CommentModelTest(TestCase):
 		}
 		resp = self.client.login(username=self.test['email'], password=self.test['password1'])
 		self.comm_resp = self.client.post(reverse('feed:comments', args=(self.feed.id,)), {'comments':'Hello World'})
+		self.comm_resp = self.client.post(reverse('feed:comments', args=(self.feed.id,)), {'comments':'Today World'})
 
 
 	def test_comment_model(self):
@@ -248,8 +250,10 @@ class CommentModelTest(TestCase):
 
 	def test_comment_model_object(self):
 		# print('Comment 5')
+
 		comment = Comments.objects.get(comments='Hello World')
 		self.assertEqual('Hello World',comment.comments)
+		# self.assertTrue(self.feed.comment.date)
 
 @tag('myposts')
 class MyPostsViewsTest(CommentModelTest):

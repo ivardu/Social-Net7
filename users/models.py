@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from users.managers import CustomUserManager
+from PIL import Image
 
 
 class SnetUser(AbstractUser):
@@ -38,10 +39,19 @@ class SnetUser(AbstractUser):
 	def friends(self):
 		return Friends.objects.filter(Q(freq_accp_id=self.id)|Q(freq_usr_id=self.id)).filter(friends='Yes')
 
+	def frn_list_ids(self):
+		self.frn_list_ids = set()
+		for frn_obj in self.friends():
+			self.frn_list_ids.add(frn_obj.freq_usr.id)
+			self.frn_list_ids.add(frn_obj.freq_accp.id)
+
+		return self.frn_list_ids
+
+
 
 def profile_img_directory(instance, filename):
 
-	return f'profile_pics/{instance.user.email}/{filename}'
+	return f'profile_pics/{instance.user.truncate()}/{filename}'
 
 
 class Profile(models.Model):
@@ -52,6 +62,24 @@ class Profile(models.Model):
 
 	def __str__(self):
 		return f'{self.user.email} Profile'
+
+	def save(self, *args, **kwargs):
+		super().save()
+		img = Image.open(self.image.path)
+		if img.width != 50 or img.height != 50:
+			resize = (50,50)
+			image = img.resize(resize, Image.ANTIALIAS)
+			image.save(self.image.path)
+
+	# def save(self, *args, **kwargs):
+	# 	super().save()
+
+	# 	img = Image.open(self.image.path)
+
+	# 	if img.height < 400 or img.width < 400:
+	# 		resize = (400, 400)
+	# 		image = img.resize(resize, Image.ANTIALIAS)
+	# 		image.save(self.image.path)
 
 
 class Friends(models.Model):

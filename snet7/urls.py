@@ -16,9 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from users import views as user_views
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import (
+    LoginView, LogoutView, PasswordResetConfirmView, 
+    PasswordResetDoneView, PasswordResetCompleteView,
+    )
 from django.conf import settings 
 from django.conf.urls.static import static
+
 
 
 urlpatterns = [
@@ -32,7 +36,18 @@ urlpatterns = [
     path('friends_req/<int:id>/', user_views.friends_req, name='friends_req'),
     path('friends_accp/<int:id>/',user_views.friends_accp, name='friends_accp'),
     path('search/',user_views.search, name='search'),
-    path('friends', user_views.friend_req_received, name='friend_req_received')
+    path('friends', user_views.friend_req_received, name='friend_req_received'),
+    path('pchange/', user_views.PasswordChange.as_view(), name='pchange'),
+    path('pass_reset/', user_views.PasswordReset.as_view(), name='pass_reset'),
+    path('pass_reset/done/', 
+        PasswordResetDoneView.as_view(template_name='users/pass_reset_done.html'), 
+        name='password_reset_done'),
+    path('pass_reset/confirm/<uidb64>/<token>/', 
+        PasswordResetConfirmView.as_view(template_name='users/password_reset_confirm.html'), 
+        name='password_reset_confirm'),
+    path('pass_reset/complete', 
+        PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html'), 
+        name='password_reset_complete')
 ]
 
 if settings.DEBUG:

@@ -2,7 +2,8 @@
 2. How we can set the format of the date which is displayed in the django form
 3. Using the global variables in the django testing
 4. Which is best client or server side to present the logic on likes count and text following it (1 Like this)
-
+5. Need to handle the feed form when its not valid.. !!
+6. How to use the same image for mutiple tests
 
 <!-- 	<script type="text/javascript">
 		window.onload= function(){

@@ -7,6 +7,10 @@ from django.views.decorators.http import require_POST
 from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm, ProfileReadOnlyForm, UserReadOnlyForm, FriendsReqForm, FriendsAccpForm
 from users.models import SnetUser, Friends
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import (PasswordChangeView, 
+	PasswordResetView, PasswordResetDoneView
+)
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.contrib import messages
 
@@ -30,6 +34,16 @@ class SignUpView(CreateView):
 		if request.user.is_authenticated:
 			return HttpResponseRedirect(reverse('feed:feed'))
 		return super().get(self, *args, **kwargs)
+
+
+class PasswordChange(SuccessMessageMixin, PasswordChangeView):
+	template_name = 'users/pchange.html'
+	success_url = reverse_lazy('login')
+	success_message = 'Your password is successfully changed.. Please login again with new password'
+
+
+class PasswordReset(PasswordResetView):
+	template_name = 'users/password_reset.html'
 
 
 @login_required
@@ -126,3 +140,5 @@ def friend_req_received(request):
 	friends = request.user.friends()
 	# print(frend_req_list, type(request.user.friend_request()))
 	return render(request, 'users/friends.html', locals())
+
+

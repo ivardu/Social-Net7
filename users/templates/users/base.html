@@ -15,6 +15,7 @@
 	<!-- Header or Nav Bar -->
 	<div>
 		<nav class="navbar navbar-expand-md navbar-dark bg-dark pt-0 pb-0">
+			<!-- My Posts, Logo and Feed Section -->
 		 	<a class="navbar-brand" href="{% url 'feed:feed' %}">Social Net7</a>
 			<div class="collapse navbar-collapse" id="navbarText">
 			{% if user.is_authenticated %}	
@@ -26,6 +27,7 @@
 			        <a class="nav-link text-white" href="{% url 'feed:myposts' request.user.id %}">MyPosts</a>
 			      </li>
 			    </ul>
+			    <!-- Search Section in Nav Bar -->
 			    <ul class="navbar-nav mx-auto">
 					<li class="nav-item">
 					    <form method="post" action="{% url 'search' %}">
@@ -39,24 +41,42 @@
 					    </form> 
 					</li>
 			    </ul>
+			    <!-- Friend Request Section -->
 			    <ul class="navbar-nav ml-auto">
 			    	<li class="nav-item">
 			    		{% if request.user.friend_request.count == 0 %}
-			    			<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><img src="{% static 'components/empty_heart.png' %}" style="{background-color: #FFFFFF}" width="30" height="30"></a>
+			    			<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><img src="{% static 'components/empty_heart.png' %}" width="30" height="30"></a>
 			    		{% else %}
-			    			<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><img src="{% static 'components/filled_love.png' %}" width="30" height="30"></a>
+			    			<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><img src="{% static 'components/filled_love.png' %}" width="25" height="25"></a>
 			    		{% endif %}
 			    	</li>
+					<!-- Profile Section -->
 			    	<li class="nav-item">	
 		    			{% if request.user.fname_empty%}
-		    			<a class="nav-link text-white" href="{% url 'profile' %}">
-		    			<img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="25"><span class="small">{{request.user.truncate|title}}</span></a>
+		    			<div class="dropdown">
+		    				<a class="nav-link text-white" href="{% url 'profile' %}" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				    			<img class=" rounded-circle" src="{{request.user.profile.image.url}}" width="25"height="25"><span class="small">{{request.user.truncate|title}}</span></a>
+							</a>
+				    		<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				    			<a class="dropdown-item small" href="{% url 'profile' %}">Profile</a>
+				    			<a class="dropdown-item small" href="{% url 'pchange' %}">Password Change</a>
+			    			</div>	
+		    			</div>
 		    			{% else %}
-		    			<a class="nav-link text-white" href="{% url 'profile' %}">
-		    			<img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="25">{{request.user.first_name|title}}</a>
+		    			<div class="dropdown">
+		    				<a class="nav-link text-white" href="{% url 'profile' %}" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			    				<img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="25">{{request.user.first_name|title}}</a>
+							</a>
+			    			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+			    				<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+			    				<a class="dropdown-item" href="{% url 'pchange' %}">Password Change</a>
+			    				
+			    			</div>
+		    			</div>
 		    			{% endif %}
 
 				    </li>
+				    <!-- Logout Section -->
 				    <li class="navbar-nav ml-auto">
 				    	<a class="nav-link text-white" href="{% url 'logout' %}"><span class="btn btn-sm btn-danger">LogOut</span></a>
 				    </li>
@@ -142,25 +162,25 @@
 					// if logged in user and commenting user same
 					if(data.value){
 						if(data.fname_empty){
-							$(data.id).append("<li class='list-group-item p-0'><small><a href='"+url_val+"'>"+data.user+"</a>"+" "+data.comments+"</small></li>")
+							$(data.id).prepend("<li class='list-group-item p-0'><small><a href='"+url_val+"'>"+data.user+"</a>"+" "+data.comments+"</small></li>")
 							console.log("<li class='list-group-item p-0'><small><a href="+url_val+">"+data.user+"</a>"+data.comments+"</small></li>")
 						}
 						// Updating the Comment Username as per the first_name saved in DB
 						else{
 							console.log('first else')
-							$(data.id).append("<li class='list-group-item p-0'><small><a href='"+url_val+"''>"+data.user+"</a>"+" "+data.comments+"</small></li>")
+							$(data.id).prepend("<li class='list-group-item p-0'><small><a href='"+url_val+"''>"+data.user+"</a>"+" "+data.comments+"</small></li>")
 						}
 					}
 					// if the logged in user and commenting user are different
 					else{
 						console.log("in else")
 						if(data.fname_empty){
-							$(data.id).append("<li class='list-group-item p-0'><small><a href=/"+url_val+"''>"+ data.user +"</a>"+" "+data.comments+"</small></li>")
+							$(data.id).prepend("<li class='list-group-item p-0'><small><a href=/"+url_val+"''>"+ data.user +"</a>"+" "+data.comments+"</small></li>")
 						}
 						// Updating the Comment Username as per the first_name saved in DB
 						else{
 							console.log('second else')
-							$(data.id).append("<li class='list-group-item p-0'><small><a href='"+url_val+"''>"+ data.user +"</a>"+" "+data.comments+"</small></li>")
+							$(data.id).prepend("<li class='list-group-item p-0'><small><a href='"+url_val+"''>"+ data.user +"</a>"+" "+data.comments+"</small></li>")
 						}
 					}
 				},
