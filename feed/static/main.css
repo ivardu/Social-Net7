@@ -8,3 +8,25 @@
  	background-color: #ebe8e4;
 
  }
+
+ .image-upload>input{
+ 	display: none;
+ }
+
+ #up_image{
+ 	cursor: pointer;
+ }
+
+ #id_post_info{
+
+ 	border-style: none;
+ 	width: 400px;
+    padding: 0 20px;
+ }
+
+
+ input::-webkit-input-placeholder {
+    font-size: 12px;
+    line-height: 3;
+}
+

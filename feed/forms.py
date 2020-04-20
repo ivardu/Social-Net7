@@ -4,7 +4,8 @@ from feed.models import Feed, Likes, Comments
 
 class FeedForm(forms.ModelForm):
 
-	post_info = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder':"What's on your mind..?"}))
+	post_info = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder':"What's on your mind..? Type here", 'id':'id_post_info' }))
+	# image  = forms.ImageField(label='', widget=forms.FileInput(attrs={'id':'id_post_image'}))
 
 	class Meta:
 		model = Feed

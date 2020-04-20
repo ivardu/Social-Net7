@@ -2,14 +2,34 @@
 {% load crispy_forms_tags %}
 {% load static%}
 {% block body %}
-<div class="container col-md-5 shadow-lg p-3 ">
-	<form method='post' enctype='multipart/form-data'>
-		{% csrf_token %}
-				{{feed_form|crispy}}
-		<div align="center">
-			<input class="btn btn-primary w-100" type="submit" name="submit" value="Post">
+<div class="container shadow-lg p-3 col-md-4">
+	<div class="row">
+		<div class="col-sm-11 offset-sm-1 text-center">
+			<form method='post' class="justify-content-center" enctype='multipart/form-data'>
+				{% csrf_token %}
+					
+						<div class="row">
+							{{feed_form.post_info}}
+						</div>
+						<div class="row p-1">
+							<img id='fi_disp' src="#" alt="Your image">
+						</div>
+						<div class="row p-1">
+							<div class="col-sm-3 image-upload" align="center">
+								<label for='id_image'>
+									<img id="up_image" src="{% static 'components/Image_upload.png' %}" width="30" height="30">
+								</label>
+								{{feed_form.image}}
+								<input class="btn btn-primary w-100" type="submit" name="submit" value="Post">
+							</div>
+							<div class="col-sm-8">
+								<input class="btn btn-primary w-100" type="submit" name="submit" value="Post">
+							</div>
+						</div>
+					
+			</form>
 		</div>
-	</form>
+	</div>
 </div>
 <div class="container">
 	{% for item in page_obj %}
@@ -117,6 +137,8 @@
 	{% endfor %}
 </div>
 <div class="container mt-2 p-3" align="center">
+<!-- {{page_obj}}
+{{paginator.page_range}} -->
 {% if page_obj %}
 		{% if page_obj.has_previous %}
 				<small><a class="btn btn-outline-info" href="?page=1">Prev</a></small>
@@ -137,3 +159,47 @@
 </div>
 
 {% endblock body %}
+{% block script %}
+<script type="text/javascript">
+function readURL() {
+	//	rehide the image and remove its current "src",
+	//	this way if the new image doesn't load,
+	//	then the image element is "gone" for now
+	$('#fi_disp').attr('src', '').hide();
+	if (this.files && this.files[0]) {
+		var reader = new FileReader();
+		$(reader).load(function(e) {
+			$('#fi_disp')
+				//	first we set the attribute of "src" thus changing the image link
+				.attr('src', e.target.result)	//	this will now call the load event on the image
+		});
+		reader.readAsDataURL(this.files[0]);
+	}
+}
+
+//	below makes use of jQuery chaining. This means the same element is returned after each method, so we don't need to call it again
+$('#fi_disp')
+	//	here we first set a "load" event for the image that will cause it change it's height to a set variable
+	//		and make it "show" when finished loading
+	.load(function(e) {
+		//	$(this) is the jQuery OBJECT of this which is the element we've called on this load method
+		$(this)
+			//	note how easy adding css is, just create an object of the css you want to change or a key/value pair of STRINGS
+			.css('height', '400px')	//	or .css({ height: '200px' })
+			//	now for the next "method" in the chain, we show the image when loaded
+			.show();	//	just that simple
+		$(this).css('width', '400px').show();
+	})
+	//	with the load event set, we now hide the image as it has nothing in it to start with
+	.hide();	//	done
+
+$("#id_image").change(readURL);
+</script>
+<script type="text/javascript">
+$('#id_post_info').click(function(){
+	$('#id_post_info').css({
+		'height':'75px',
+	});
+});
+</script>
+{% endblock script %}
