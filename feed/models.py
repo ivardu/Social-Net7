@@ -13,9 +13,9 @@ def feed_data_directory(instance, filename):
 
 # Feed model to store the Users Post info, images(object path), posted_date and user info
 class Feed(models.Model):
-	post_info = models.CharField(max_length=255)
+	post_info = models.CharField(max_length=255, blank=True)
 	date = models.DateTimeField(auto_now_add=True)
-	image = models.ImageField(upload_to=feed_data_directory)
+	image = models.ImageField(upload_to=feed_data_directory, blank=True, null=True)
 	user = models.ForeignKey(SnetUser, on_delete=models.CASCADE)  
 
 	class Meta:
@@ -25,13 +25,15 @@ class Feed(models.Model):
 
 	def save(self, *args, **kwargs):
 		super().save()
-
-		img = Image.open(self.image.path)
-
-		if img.height < 400 or img.width < 400:
-			resize = (400, 400)
-			image = img.resize(resize, Image.ANTIALIAS)
-			image.save(self.image.path)
+		
+		if self.image == None :
+			pass
+		else:
+			img = Image.open(self.image.path)
+			if img.height < 400 or img.width < 400:
+				resize = (400, 400)
+				image = img.resize(resize, Image.ANTIALIAS)
+				image.save(self.image.path)
 
 	def likes_count(self):
 		return self.likes_set.filter(likes=1).count()

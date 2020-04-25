@@ -2,7 +2,8 @@
   content: '\2807';
   font-size: 20px;
   }
-  
+
+  /*dropdown color of Edit and Profile to light white*/
  .dropdown-menu>a:hover{
  	background-image: none;
  	background-color: #ebe8e4;
@@ -13,20 +14,64 @@
  	display: none;
  }
 
+/*Upload image on hover pointer as Hand*/
  #up_image{
  	cursor: pointer;
  }
 
+/*Feed Post infot text box size to 400px*/
  #id_post_info{
-
  	border-style: none;
  	width: 400px;
     padding: 0 20px;
  }
 
+ /*removing the x mark in the internet explorer */
+#id_post_info::-ms-clear{
+ 	display: none;
+ }
 
+/*Input text boxes place holder sizez*/
  input::-webkit-input-placeholder {
     font-size: 12px;
     line-height: 3;
 }
 
+/*setting the nav_search input text box width to 100% and box properties too*/
+#nav_search{
+	min-width: 400px;
+	width: 100%;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#overlay{
+	position: absolute;
+	top: 100%;
+	right: auto;
+	left: 0;
+	display: none;
+	width: 400px;
+	/*min-height: 100px;*/
+	height: 200px;
+	background-color: #FFF;
+	filter:alpha(opacity=100);
+	-moz-opacity:1.0;
+	-khtml-opacity:1.0;
+	opacity:1.0;
+	z-index:100;
+	border-radius: 0 0px 4px 4px;
+	box-shadow: 0 4px 6px 0 rgba(32,33,35,0.30);
+	outline: 4px;
+
+}
+
+.sharirammu{
+background-color: #FFF;
+}
+
+/*.poorthi_sarirammu{
+background-color: #000;
+
+}*/

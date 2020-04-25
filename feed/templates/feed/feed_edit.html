@@ -1,20 +1,64 @@
 {% extends 'users/base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block body %}
-<div class="container shadow-lg p-3 mt-2 w-50">
+<div class="container col-md-5 shadow-lg p-3 mt-2 w-50">
 	<div class="row">
+		<div class="col-md-2">
+				<img class="img-thumbnail rounded-circle" src="{{request.user.profile.image.url}}" width="50" height="50">
+		</div>
+		<div class="col-md-9">
+			<!-- Feed Post User Details -->
+			<div class="row">
+			{% if request.user == request.user %}
+				<div class="col-sm-10 pl-0">
+					{% if request.user.fname_empty %}
+					<small><a href="{% url 'profile' %}">{{request.user.truncate|title}}</a></small>
+					{% else %}
+					<small><a href="{% url 'profile' %}">{{request.user.first_name}} {{request.user.last_name}}</a></small>
+					{% endif %}
+				</div>
+			{% else %}
+				{% if request.user.fname_empty %}
+				<small><a href="{% url 'rprofile' request.user.id %}">{{request.user.truncate|title}}</a></small>
+				{% else %}
+				<small><a href="{% url 'rprofile' request.user.id %}">{{request.user.first_name}} {{request.user.last_name}}</a></small>
+				{% endif %}
+			{% endif %}
+			</div>
+			<!-- Feed Post User Email  -->
+<!-- 				<div class="row">
+				<small>{{request.user.email}}</small>
+			</div> -->
+			<!--  Feed Post timeline  -->
+			<div class="row">
+				<h6 class="small">{{object.feed_post_time}}</h6>
+				<!-- <span class="small">{{request.date}}</span> -->
+			</div>
+		</div>
 		<div class="col-sm-11 offset-sm-1 text-center">
-			<form method="post" class="justify-content-center" enctype="mulitpart/form-data">
+			
+			<form method="post" class="justify-content-center" enctype="multipart/form-data">
 				{% csrf_token %}
-				<div class="row">
+				<div class="row p-1">
 					{{form.post_info}}
 				</div>
-				<div class="row">
-					<img src="{{form.image.value}}" height="400" width="400">
-					{{form.image}}
+				<div class="row p-1">
+					{% if form.instance.image %}
+					<img src="{{form.instance.image.url}}" id="fi_disp" height="400" width="400">
+					{% else %}
+					{% endif %}
 				</div>
-				<div class="row" align="center">
-					<div class="col-sm-11">
+				<div class="row p-1" align="center">
+					<div class="col-sm-3 image-upload">
+						<label for='id_image'>
+							<img id="up_image" src="{% static 'components/Image_upload.png' %}" width="30" height="30">
+						</label>
+						<!-- {{form.image}} -->
+						<input type="file" name="image" id="id_image">
+						
+					</div>
+					<div class="col-sm-6">
 						<a class="btn btn-sm btn-warning" href="{% url 'feed:feed' %}">Cancel</a>
 
 						<input class="btn btn-sm btn-success" type="submit" name="Update" value="Update">		
@@ -37,7 +81,7 @@
 		$(reader).load(function(e) {
 			$('#fi_disp')
 				//	first we set the attribute of "src" 
-				hus changing the image link
+				// thus changing the image link
 				.attr('src', e.target.result)	//	this will now call the load event on the image
 		});
 		reader.readAsDataURL(this.files[0]);
@@ -58,8 +102,9 @@ $('#fi_disp')
 		$(this).css('width', '400px').show();
 	})
 	//	with the load event set, we now hide the image as it has nothing in it to start with
-	.hide();	//	done
+	// .hide();	//	done
 
-$("#id_post_image").change(readURL);
+$("#id_image").change(readURL);
+$('#id_post_info').focus();
 </script>
 {% endblock script %}

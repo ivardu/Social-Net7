@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.generic.edit import FormView, CreateView
 from django.views.decorators.http import require_POST
 # from django.contrib.auth.views import UserCreation
@@ -127,11 +127,44 @@ def friends_accp(request, id):
 def search(request):
 	result = request.POST.get('search')
 	no_result = 'No Results Found'
-	if result:
-		name_list = SnetUser.objects.filter(Q(first_name=result)|Q(last_name=result)|Q(email__contains=result))
-		# print(name_list)
+	data = [{
+		'no_result':no_result,
+	}]
 
-	return render(request, 'users/search.html', locals())
+	# validating the search resulted user and logged in user are same.
+	def return_value(value, user):
+		if value:
+			return reverse('profile')
+		return reverse('rprofile', args=(user.id,))
+
+	if result:
+		# Results everything for a search match
+		name_list = SnetUser.objects.filter(Q(first_name=result)|Q(last_name=result)|Q(email__contains=result))
+		if name_list:
+			for user in name_list:
+				frnd = Friends.objects.filter(friends='Yes').filter(Q(freq_usr=user)|Q(freq_accp=user)).filter(Q(freq_usr=request.user)|Q(freq_accp=request.user))
+				if frnd and frnd[0].friends == 'Yes' :
+					friends = 'Friends'
+				else:
+					friends = 'Not Friends'
+
+				value = (request.user.id == user.id)
+				data_in = {}
+				data_in['user_id'] = user.id
+				data_in['value'] = value
+				data_in['user'] = user.truncate().capitalize()
+				data_in['fname_empty'] = user.fname_empty()
+				data_in['url_val'] = return_value(value, user)
+				data_in['friends'] = friends
+				data_in['img_url'] = user.profile.image.url
+				data.append(data_in)
+
+
+			del data[0]
+	print(data)
+
+	return JsonResponse(data, safe=False)
+	# return render(request, 'users/search.html', locals())
 
 @login_required
 def friend_req_received(request):

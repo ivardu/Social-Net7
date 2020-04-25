@@ -25,10 +25,13 @@
 				</div>
 				<!-- Feed Post image section -->
 				<div class="row">
-					<img src="{{item.image.url}}" width="400" height="400">
+					{% if item.image %}
+						<img src="{{item.image.url}}" width="400" height="400">
+					{% else %}
+					{% endif %}
 				</div>
 				<!-- Likes Section -->
-				<div class="row mx-auto">
+				<div class="row mr-auto">
 					<form method="post" class='likes_form' likes-url="{% url 'feed:likes' item.id %}">
 						{% csrf_token %}
 						<input type="hidden" name="likes" value="1">
@@ -36,7 +39,7 @@
 					</form>
 				</div>
 				<!-- Comments Section -->
-				<div class="row mx-auto">
+				<div class="row mr-auto">
 					<form class="comment_form" comment-url="{% url 'feed:comments' item.id %}" method="post">
 						{% csrf_token %}
 						<div class="form-group form-inline mb-0">
@@ -46,29 +49,31 @@
 					</form>
 				</div>
 				<!-- Commments List Section -->
-				<div class="pl-0">
-					<ul class="list-group list-group-flush" id=Feed{{item.id}}>
-					{% if item.comments_set.all %}
-						{% for item in item.comments_set.all %}
-						<li class="list-group-item p-0">
-							<!-- <hr class="p-0 m-0 b-light"> -->
-							{% if item.user == request.user %}
-								{% if item.user.fname_empty %}
-								<small><a href="{% url 'profile' %}">{{item.user.truncate|title}} </a>{{item.comments}}</small>
+				<div class="row">
+					<div class="container pl-0">
+						<ul class="list-group list-group-flush" id=Feed{{item.id}}>
+						{% if item.comments_set.all %}
+							{% for item in item.comments_set.all %}
+							<li class="list-group-item p-0">
+								<!-- <hr class="p-0 m-0 b-light"> -->
+								{% if item.user == request.user %}
+									{% if item.user.fname_empty %}
+									<small><a href="{% url 'profile' %}">{{item.user.truncate|title}} </a>{{item.comments}}</small>
+									{% else %}
+										<small><a href="{% url 'profile'%}">{{item.user.first_name|title}} </a> {{item.comments}}</small>
+									{% endif %}
 								{% else %}
-									<small><a href="{% url 'profile'%}">{{item.user.first_name|title}} </a> {{item.comments}}</small>
+									{% if item.user.fname_empty %}
+									<small><a href="{% url 'rprofile' item.user.id %}">{{item.user.truncate|title}}</a> {{item.comments}}</small>
+									{% else %}
+										<small><a href="{% url 'rprofile' item.user.id %}">{{item.user.first_name|title}}</a> {{item.comments}}</small>
+									{% endif %}
 								{% endif %}
-							{% else %}
-								{% if item.user.fname_empty %}
-								<small><a href="{% url 'rprofile' item.user.id %}">{{item.user.truncate|title}}</a> {{item.comments}}</small>
-								{% else %}
-									<small><a href="{% url 'rprofile' item.user.id %}">{{item.user.first_name|title}}</a> {{item.comments}}</small>
-								{% endif %}
-							{% endif %}
-						</li>
-						{% endfor %}	
-					{% endif %}
-					</ul>
+							</li>
+							{% endfor %}	
+						{% endif %}
+						</ul>
+					</div>
 				</div>
 			</div>
 			<div class="col-md-1">
