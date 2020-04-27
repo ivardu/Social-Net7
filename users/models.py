@@ -94,4 +94,19 @@ class Friends(models.Model):
 
 
 
+def cover_photo_directory(instance, filename):
+	return f'{instance.user.email}/cover_photo/{filename}'
 
+class UserCover(models.Model):
+	cover_photo = models.ImageField(upload_to=cover_photo_directory)
+	user = models.OneToOneField(SnetUser, on_delete=models.CASCADE)
+
+
+	def save(self, *args, **kwargs):
+		super().save()
+		img = Image.open(self.cover_photo.path)
+
+		if (img.height < 462 or img.height > 462) and (img.width > 820 or img.width < 820):
+			standard_size = (820, 462)
+			image = img.resize(standard_size,Image.ANTIALIAS)
+			image.save(self.cover_photo.path)

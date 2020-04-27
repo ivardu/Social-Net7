@@ -4,7 +4,9 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.generic.edit import FormView, CreateView
 from django.views.decorators.http import require_POST
 # from django.contrib.auth.views import UserCreation
-from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm, ProfileReadOnlyForm, UserReadOnlyForm, FriendsReqForm, FriendsAccpForm
+from users.forms import (SignUpForm, ProfileUpdateForm, UserUpdateForm, 
+	ProfileReadOnlyForm, UserReadOnlyForm, FriendsReqForm, 
+	FriendsAccpForm, CoverPhotoForm)
 from users.models import SnetUser, Friends
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import (PasswordChangeView, 
@@ -46,6 +48,7 @@ class PasswordReset(PasswordResetView):
 	template_name = 'users/password_reset.html'
 
 
+# Profile viewer 
 @login_required
 def profile(request):
 	if request.method == 'POST':
@@ -60,11 +63,13 @@ def profile(request):
 	else:
 		profile_form = ProfileUpdateForm(instance=request.user.profile)
 		user_form = UserUpdateForm(instance=request.user)
+		cover_form = CoverPhotoForm(instance=request.user.usercover)
 
 
 	return render(request, 'users/profile.html', locals())
 
 
+# Ready only profile for other users
 @login_required
 def rprofile(request, id):
 	user = SnetUser.objects.get(pk=id)
@@ -139,7 +144,13 @@ def search(request):
 
 	if result:
 		# Results everything for a search match
-		name_list = SnetUser.objects.filter(Q(first_name=result)|Q(last_name=result)|Q(email__contains=result))
+		if len(result.strip().split(' ')) > 1:
+			first, second = result.strip().split(' ')
+			name_list = SnetUser.objects.filter(Q(first_name__contains=first)|Q(last_name__contains=second)|Q(first_name__contains=second)|Q(last_name__contains=first)|Q(email__contains=first)|Q(email__contains=second))
+		else:
+			first = result.strip() 
+			name_list = SnetUser.objects.filter(Q(first_name__contains=first)|Q(last_name__contains=first)|Q(email__contains=first))
+	
 		if name_list:
 			for user in name_list:
 				frnd = Friends.objects.filter(friends='Yes').filter(Q(freq_usr=user)|Q(freq_accp=user)).filter(Q(freq_usr=request.user)|Q(freq_accp=request.user))
@@ -161,7 +172,7 @@ def search(request):
 
 
 			del data[0]
-	print(data)
+	# print(data)
 
 	return JsonResponse(data, safe=False)
 	# return render(request, 'users/search.html', locals())
@@ -173,5 +184,24 @@ def friend_req_received(request):
 	friends = request.user.friends()
 	# print(frend_req_list, type(request.user.friend_request()))
 	return render(request, 'users/friends.html', locals())
+
+
+
+# Coverphoto handler
+@login_required
+def cover_photo(request):
+	user = request.user
+	print(request.POST, request.FILES)
+	if request.method == 'POST':
+		form = CoverPhotoForm(request.POST, request.FILES, instance=user.usercover)
+		if form.is_valid():
+			form_obj = form.save(commit=False)
+			form_obj.user = user
+			form_obj.save()
+		else:
+			print(form.errors)
+		return HttpResponseRedirect(reverse('profile'))
+
+		
 
 

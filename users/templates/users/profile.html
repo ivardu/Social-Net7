@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 <!-- {% load i18n %} -->
 {% block body %}
-<div class="w-50 mx-auto mt-2">
+<div class="w-50 mx-auto">
 	{% if messages %}
 		{% for message in messages %}
 		<div class="shadow-lg alert alert-success" align="center">
@@ -11,33 +11,73 @@
 		{% endfor %}
 	{% endif %}
 </div>
-<div class="container rounded shadow-lg mt-2 p-3 w-25">
-	<div class="row">
-		<div class="col-md-3">
-			<img class="img-thumbnail rounded-circle" src="{{request.user.profile.image.url}}" width="50" height="50">
+<div class="container col-md-7">
+	<div class="container wrapper_container"> 
+		<div id="cover_photo_div">
+			<form method="post" action="{% url 'cover_pic' %}" enctype='multipart/form-data'>
+				{% csrf_token %}
+				<div class="cover-img-disp-blc col-sm-12">
+					<label for='cover_id'>
+						<img src="{{request.user.usercover.cover_photo.url}}" >
+					</label>
+					{{cover_form.cover_photo}}
+				</div>
+				<input type="submit" name="submit" value="submit">
+			</form>
 		</div>
-		<div class="col-md-6">
-			<div>
-				{% if request.user.fname_empty %}
-					<span>{{request.user.truncate|title}}</span>
-				{% else %}
-					<span>{{request.user.first_name}} {{request.user.last_name}}</span>
-				{% endif %}
+		<div class="profile-image-container">
+			<label for="inimgF">
+			<img id='profile_image' class="img-thumbnail rounded-circle" src="{{request.user.profile.image.url}}">
+			</label>
+		</div>
+		<div class="row shadow-lg" id='second_part_div_prof'>
+			<div class="col-md-6">
+				<div class="row offset-1">
+					<div class="col-sm-8" id='prof_nam_detail'>
+						<div>
+							{% if request.user.fname_empty %}
+								<span>{{request.user.truncate|title}}</span>
+							{% else %}
+								<span>{{request.user.first_name}} {{request.user.last_name}}</span>
+							{% endif %}
+						</div>
+						<span class="small">{{request.user.email}}</span>
+					</div>
+				</div>
 			</div>
-			<span>{{request.user.email}}</span>
+			<div class="col-md-6 mx-auto">
+			</div>
 		</div>
 	</div>
-	<div>
-		<form method="post" enctype="multipart/form-data">
-			{% csrf_token %}
-			{{profile_form|crispy}}
-			{{user_form|crispy}}
-			<div align="center">
-				<a class="btn btn-sm btn-warning" href="{% url 'profile' %}">Cancel</a>
-				<input class="btn btn-sm btn-success" type="submit" name="submit" value="Update" >	
+	<div class="container" id="profile-user-form-cont" >
+			<div class="profile-user-form shadow-lg">
+				<form method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<input id="inimgF" type="file" name="image"/>
+					<div class="form-row">
+						<div class="col">
+							{{profile_form.dob}}
+						</div>
+						<div class="col">
+							{{user_form.email}}
+						</div>
+						<div class="col">
+							{{user_form.first_name}}
+						</div>
+						<div class="col">
+							{{user_form.last_name}}
+						</div>
+						<!-- 	{{profile_form.dob}}
+							{{user_form}} -->
+					</div>
+					<div class="p-1" align="center">
+						<a class="btn btn-sm btn-warning" href="{% url 'profile' %}">Cancel</a>
+						<input class="btn btn-sm btn-success" type="submit" name="submit" value="Update" >	
+					</div>
+
+				</form>
 			</div>
-		</form>
-	</div>
-	
+		<!-- </div> -->
+	</div>	
 </div>
 {% endblock body %}

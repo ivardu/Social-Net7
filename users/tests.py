@@ -10,7 +10,9 @@ from django.db.utils import IntegrityError
 
 from users.models import SnetUser, Profile, profile_img_directory, Friends
 from users.views import SignUpView
-from users.forms import SignUpForm, ProfileUpdateForm, UserUpdateForm, ProfileReadOnlyForm, UserReadOnlyForm, FriendsReqForm, FriendsAccpForm
+from users.forms import( SignUpForm, ProfileUpdateForm, UserUpdateForm, 
+	ProfileReadOnlyForm, UserReadOnlyForm, FriendsReqForm, 
+	FriendsAccpForm, CoverPhotoForm)
 from model_bakery import baker
 from unittest.mock import patch
 from users.signals import create_profile
@@ -516,8 +518,27 @@ class PasswordRestTest(PasswordChangeViewTest):
 
 
 
+@tag('cover_photo')
+class CoverPhotoTest(TestCase):
 
-		
+	def setUp(self):
+		self.user = SnetUser.objects.create(email='ravi@gmail.com')
+		self.user.set_password('Testing@007')
+		self.user.save()
+		self.resp = self.client.login(username='ravi@gmail.com', password='Testing@007')
+
+	def test_cover_photo(self):
+		file = open(os.path.join(settings.BASE_DIR, 'logged_out.jpg'), 'rb')
+		image = SimpleUploadedFile(name=file.name, content=file.read(), content_type='image/jpeg')
+
+		self.assertTrue(self.resp)
+		form = CoverPhotoForm(data={'cover_photo':image, 'user':self.user})
+		self.assertTrue(form.is_valid)
+
+	def test_cover_url_view(self):
+		self.url = self.client.post(reverse('cover_photo', args=(self.user.id,)))
+		self.assertTrue(self.url.status_code, 200)
+
 
 
 		

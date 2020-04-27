@@ -35,9 +35,10 @@ def feed(request):
 		feed_form = FeedForm(request.POST, request.FILES)
 		# print('stage 2')
 		if feed_form.is_valid():
-			feed_obj = feed_form.save(commit=False)
-			feed_obj.user = request.user
-			feed_obj.save()
+			if feed_form.cleaned_data['post_info'].length > 0:
+				feed_obj = feed_form.save(commit=False)
+				feed_obj.user = request.user
+				feed_obj.save()
 			# print('success')
 			return HttpResponseRedirect(reverse('feed:feed'))
 		else:

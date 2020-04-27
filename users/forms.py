@@ -1,4 +1,4 @@
-from users.models import SnetUser, Profile, Friends
+from users.models import SnetUser, Profile, Friends, UserCover
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.admin.widgets import AdminDateWidget
@@ -13,9 +13,10 @@ class SignUpForm(UserCreationForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
-	dob = forms.DateField(input_formats=['%d/%m/%Y'], required=False, widget=forms.TextInput(attrs={
-		'id':'datepicker'
+	dob = forms.DateField(label='DOB', input_formats=['%d/%m/%Y'], required=False, widget=forms.TextInput(attrs={
+		'id':'datepicker', 'class':'form-control', 'placeholder':'19/9/2000',
 		}))
+	image = forms.ImageField(widget=forms.FileInput(attrs={'class':'form-control'}))
 	class Meta:
 		model = Profile
 		fields = ['image', 'dob']
@@ -23,8 +24,9 @@ class ProfileUpdateForm(forms.ModelForm):
 
 class UserUpdateForm(forms.ModelForm):
 	# Leaving optional to the-- users in updating the fields first_name and last_name
-	# first_name = forms.CharField()
-	# last_name = forms.CharField()
+	first_name = forms.CharField(required=False, widget=forms.TextInput(attrs=({'class':'form-control'})))
+	last_name = forms.CharField(required=False, widget=forms.TextInput(attrs=({'class':'form-control'})))
+	email = forms.EmailField(widget=forms.TextInput(attrs=({'class':'form-control'})))
 
 	class Meta:
 		model = SnetUser
@@ -64,3 +66,11 @@ class FriendsAccpForm(forms.ModelForm):
 	class Meta:
 		model = Friends
 		fields = ['friends']
+
+
+class CoverPhotoForm(forms.ModelForm):
+	cover_photo = forms.ImageField(widget=forms.FileInput(attrs=({'id':'cover_id'})))
+
+	class Meta:
+		model = UserCover
+		fields = ['cover_photo']

@@ -99,24 +99,24 @@ $(document).ready(function(){
 	$(document).ready(function(){
 		$('#ip_nav_search').on('keyup', function(e){
 			e.preventDefault();
-			// console.log('happening');
-			var form = $('#search_form');
-			var url = form.attr('data_url');
-			var method = form.attr('method');
 			var search = $('#ip_nav_search').val(); 
-			console.log(form.serialize())
-			// Ajax call to the django server for search results
-			$.ajax({
-				url: url,
-				cache: false,
-				type: method,
-				data: form.serialize(),
-				success: results,
-				error: function(e)
-				{
-					console.log('am I failing..?');
-				}
-			});
+			if(search == ' '){
+				$('#id_search_results').append("<li class='list-group-item'><h6 class='small p-3'>No Results found</h6></li>");
+			}
+			else{
+				// Ajax call to the django server for search results
+				$.ajax({
+					url: $('#search_form').attr('data_url'),
+					cache: false,
+					type: $('#search_form').attr('method'),
+					data: $('#search_form').serialize(),
+					success: results,
+					error: function(e)
+					{
+						console.log('am I failing..?');
+					}
+				});
+			}
 		}).keyup(function(e){
 			if(e.keyCode == 8 || e.keycode == 46){
 				$('#id_search_results li').remove();
@@ -126,6 +126,7 @@ $(document).ready(function(){
 	function results(data)
 	{
 		// console.log("What is my status");
+		$('#id_search_results li').remove();
 		$.each(data, function(index, data)
 		{
 			// console.log(data)
@@ -134,7 +135,7 @@ $(document).ready(function(){
 			// console.log(url_val);
 			if (data.no_result)
 			{
-				$('#id_search_results').append("<li class='list-group-item'><h6>No Results found</h6></li>")
+				$('#id_search_results').append("<li class='list-group-item'><h6 class='small p-3'>No Results found</h6></li>")
 			}
 			else{
 				// if logged in user and commenting user same
@@ -162,3 +163,21 @@ $(document).ready(function(){
 			}
 	});
 }
+
+$(document).ready(function(){
+	$('.profile-image-container').click(function(){
+		$('#inimgF').click();
+	});	
+});
+
+
+$('#inimgF').change(function(){
+	if(this.files && this.files[0]){
+		var reader = FileReader();
+		$(reader).load(function(e){
+			$('profile_image').attr('src',e.target.result);
+		});
+		reader.readAsDataURL(this.files[0]);
+	}
+});
+
