@@ -33,12 +33,14 @@ def feed(request):
 
 	if request.method == 'POST':
 		feed_form = FeedForm(request.POST, request.FILES)
-		# print('stage 2')
-		if feed_form.is_valid():
-			if feed_form.cleaned_data['post_info'].length > 0:
-				feed_obj = feed_form.save(commit=False)
-				feed_obj.user = request.user
-				feed_obj.save()
+		request_data = (request.FILES.get('image',False) or request.FILES.get('video', False) or request.POST.get('post_info',False))
+		# print(request.FILES.get('image',False) or request.FILES.get('video', False) or request.POST.get('post_info',False))
+		# print(request.POST.get('video', False ), request_data)
+		if feed_form.is_valid() and request_data != False:
+			# if len(feed_form.cleaned_data['post_info']) > 0:
+			feed_obj = feed_form.save(commit=False)
+			feed_obj.user = request.user
+			feed_obj.save()
 			# print('success')
 			return HttpResponseRedirect(reverse('feed:feed'))
 		else:
@@ -55,14 +57,19 @@ def likes(request, id):
 	except Exception as e:
 		print(e)
 
-	if request.method == 'POST' and len(user_liked)==0:
+	if request.method == 'POST':
 		likes_form = LikesForm(request.POST)
 		if likes_form.is_valid():
-			likes_obj = likes_form.save(commit=False)
-			# likes_obj.likes = 1
-			likes_obj.feed = feed
-			likes_obj.user = request.user
-			likes_obj.save()
+			if len(user_liked)==0:
+				likes_obj = likes_form.save(commit=False)
+				# likes_obj.likes = 1
+				likes_obj.feed = feed
+				likes_obj.user = request.user
+				likes_obj.save()
+
+			else:
+				user_liked[0].delete()
+
 			data = {
 				'count': feed.likes_set.count()
 			}

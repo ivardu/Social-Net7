@@ -14,14 +14,21 @@
 				<div class="p-1 mx-auto">
 					<img id='fi_disp' src="#" alt="Your image">
 				</div>
-				<div class="row p-2 mx-auto">
-					<div class="col-sm-4 image-upload" align="center">
+				<div class="d-flex flex-row justify-content-center">
+					<div class="p-2 col-sm-1 feed-upload" align="center">
 						<label for='id_image'>
-							<img id="up_image" src="{% static 'components/Image_upload.png' %}" width="30" height="30">
+							<img id="up_image" src="{% static 'components/Image_upload.png' %}">
 						</label>
 						{{feed_form.image}}
 					</div>
-					<div class="col-sm-4">
+					<div class="p-2 col-sm-1 feed-upload">
+						<label for='id_video'>
+							<img id='video_upload' src="{% static 'components/video_upload.png' %}">
+						</label>
+						{{feed_form.video}}
+
+					</div>
+					<div class="p-2 col-sm-4">
 						<input id='feed_form_submit' class="btn btn-sm btn-dark w-100" type="submit" name="submit" value="Post">
 					</div>
 				</div>
@@ -36,7 +43,7 @@
 		<!-- <h1>{{item.id}}</h1> -->
 		<div class="row container shadow p-2 mt-2 rounded mx-auto ">
 			<div class="col-md-2">
-				<img class="img-thumbnail rounded-circle" src="{{item.user.profile.image.url}}" width="50" height="50">
+				<img class="img-thumbnail rounded-circle" src="{{item.user.profile.image.url}}">
 			</div>
 			<div class="col-md-9">
 				<!-- Feed Post User Details -->
@@ -74,7 +81,10 @@
 				<div class="row">
 					{% if item.image %}
 						<img src="{{item.image.url}}" width="400" height="400">
-					{% else %}
+					{% elif item.video %}
+					<video width="400" height="250" controls>
+						<source src="{{item.video.url}}" type="video/mp4">
+					</video>
 					{% endif %}
 				</div>
 				<!-- Likes Section -->
@@ -91,7 +101,7 @@
 						{% csrf_token %}
 						<div class="form-group form-inline mb-0">
 							{{comment_form}}
-							<input class="btn btn-sm btn-info" type="submit" name="submit" value="comment">
+							<input id='comment_btn' class="btn btn-sm btn-info" type="submit" name="submit" value="comment">
 						</div>
 					</form>
 				</div>
@@ -103,11 +113,34 @@
 						{% for item in item.comments_set.all %}
 						<li class="list-group-item p-0">
 							<!-- <hr class="p-0 m-0 b-light"> -->
+							<div class="row">
 							{% if item.user == request.user %}
 								{% if item.user.fname_empty %}
-								<small><a href="{% url 'profile' %}">{{item.user.truncate|title}} </a>{{item.comments}}</small>
+								<div class="col-sm-6">
+									<div class="">
+									<small><a href="{% url 'profile' %}">{{item.user.truncate|title}} </a>{{item.comments}}</small>
+									</div>
+								</div>
+								<div class="col-sm-6 d-flex flex-row-reverse">
+									<div>
+										<label for='edit_button'>
+										<img id='edit_btn_img' src="{% static 'components/edit_comment.png' %}">
+										</label>
+										<input id='edit_button' class="" type="submit" name="Edit" value="Edit">
+									</div>
+								</div>
 								{% else %}
+								<div class="col-sm-6">
 									<small><a href="{% url 'profile'%}">{{item.user.first_name|title}} </a> {{item.comments}}</small>
+								</div>
+								<div class="col-sm-6 d-flex flex-row-reverse">
+									<div>
+									<label for='edit_button'>
+									<img id='edit_btn_img' src="{% static 'components/edit_comment.png' %}">
+									</label>
+									<input class="" type="submit" name="Edit" value="Edit">
+									</div>
+								</div>
 								{% endif %}
 							{% else %}
 								{% if item.user.fname_empty %}
@@ -116,6 +149,7 @@
 									<small><a href="{% url 'rprofile' item.user.id %}">{{item.user.first_name|title}}</a> {{item.comments}}</small>
 								{% endif %}
 							{% endif %}
+							</div>
 						</li>
 						{% endfor %}	
 					{% endif %}
@@ -148,7 +182,7 @@
 			{% endif %}
 			{% for num in paginator.page_range %}
 				{% if num == page_obj.number and paginator.num_pages == 1 %}
-					<small><a class="btn btn-sm btn-secondary" href="#"><<</a> <a class="btn btn-sm btn-light text-dark" href="?page={{num}}">{{num}}</a> <a class="btn btn-secondary" href="#">>></a></small>
+					<small><a class="btn btn-sm btn-secondary" href="#"><<</a> <a class="btn btn-sm btn-light text-dark" href="?page={{num}}">{{num}}</a> <a class="btn btn-sm btn-secondary" href="#">>></a></small>
 				{% elif num == page_obj.number %}
 					<small><a class="btn btn-sm btn-light" href="?page={{num}}">{{num}}</a></small>
 				{% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'+3' %}
@@ -170,13 +204,17 @@ function readURL() {
 	//	then the image element is "gone" for now
 	$('#fi_disp').attr('src', '').hide();
 	if (this.files && this.files[0]) {
-		var reader = new FileReader();
-		$(reader).load(function(e) {
-			$('#fi_disp')
-				//	first we set the attribute of "src" thus changing the image link
-				.attr('src', e.target.result)	//	this will now call the load event on the image
-		});
-		reader.readAsDataURL(this.files[0]);
+		// var reader = new FileReader();
+		// $(reader).load(function(e) {
+		// 	$('#fi_disp')
+		// 		//	first we set the attribute of "src" thus changing the image link
+		// 		.attr('src', e.target.result)	//	this will now call the load event on the image
+		// });
+		// reader.readAsDataURL(this.files[0]);
+		$('#fi_disp').attr('src', URL.createObjectURL(this.files[0]));
+		$('#fi_disp').onload = function(){
+			URL.revokeObjectURL(this.src);
+		}
 	}
 }
 
@@ -214,9 +252,9 @@ $('#id_post_info').click(function(){
 $(document).ready(function() {
 	$('#feed_form_submit').prop('disabled', true);
 	function validatePostData(){
-		console.log($('#id_image').get(0).files.length !== 0)
-		var postData = $('#id_post_info').val() !== '' || $('#id_image').get(0).files.length !== 0;
-		console.log(!postData)
+		// console.log($('#id_image').get(0).files.length !== 0)
+		var postData = $('#id_post_info').val() !== '' || $('#id_image').get(0).files.length !== 0 || $('#id_video').get(0).files.length !==0 ;
+		// console.log(!postData)
 		$('#feed_form_submit').prop('disabled', !postData);
 	}
 
@@ -224,6 +262,7 @@ $(document).ready(function() {
 	$('#id_post_info').on('keyup', validatePostData);
 	// call the validatePostData function when user inputs the image file
 	$('#id_image').change(validatePostData);
+	$('#id_video').change(validatePostData);
 });
 </script>
 {% endblock script %}

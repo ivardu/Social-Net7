@@ -66,7 +66,7 @@ class Profile(models.Model):
 	def save(self, *args, **kwargs):
 		super().save()
 		img = Image.open(self.image.path)
-		if img.width != 50 or img.height != 50:
+		if img.width < 50 or img.height < 50:
 			resize = (50,50)
 			image = img.resize(resize, Image.ANTIALIAS)
 			image.save(self.image.path)
@@ -98,7 +98,7 @@ def cover_photo_directory(instance, filename):
 	return f'{instance.user.email}/cover_photo/{filename}'
 
 class UserCover(models.Model):
-	cover_photo = models.ImageField(upload_to=cover_photo_directory)
+	cover_photo = models.ImageField(default='Cover_default.jpg', upload_to=cover_photo_directory)
 	user = models.OneToOneField(SnetUser, on_delete=models.CASCADE)
 
 

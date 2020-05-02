@@ -35,9 +35,7 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class ProfileReadOnlyForm(forms.ModelForm):
-	dob = forms.DateField(disabled=True)
-	# first_name = forms.CharField(disabled=True)
-	# last_name = forms.CharField(disabled=True)
+	dob = forms.DateField(disabled=True, widget=forms.TextInput(attrs={'class':'form-control'}))
 
 	class Meta:
 		model = Profile
@@ -45,9 +43,9 @@ class ProfileReadOnlyForm(forms.ModelForm):
 
 
 class UserReadOnlyForm(forms.ModelForm):
-	first_name = forms.CharField(disabled=True)
-	last_name = forms.CharField(disabled=True)
-	email = forms.CharField(disabled=True)
+	first_name = forms.CharField(disabled=True, widget=forms.TextInput(attrs={'class':'form-control'}))
+	last_name = forms.CharField(disabled=True, widget=forms.TextInput(attrs={'class':'form-control'}))
+	email = forms.CharField(disabled=True, widget=forms.TextInput(attrs={'class':'form-control'}))
 
 	class Meta:
 		model = SnetUser

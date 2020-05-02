@@ -16,6 +16,7 @@ class Feed(models.Model):
 	post_info = models.CharField(max_length=255, blank=True)
 	date = models.DateTimeField(auto_now_add=True)
 	image = models.ImageField(upload_to=feed_data_directory, blank=True, null=True)
+	video = models.FileField(upload_to=feed_data_directory, blank=True, null=True)
 	user = models.ForeignKey(SnetUser, on_delete=models.CASCADE)  
 
 	class Meta:

@@ -7,10 +7,11 @@ class FeedForm(forms.ModelForm):
 
 	post_info = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder':"What's on your mind..? Type here", 'id':'id_post_info', 'class':'post_submit_action' }), required=False)
 	image  = forms.ImageField(label='', widget=forms.FileInput(attrs={'id':'id_image'}), required=False)
+	video = forms.FileField(label='', widget=forms.FileInput(attrs={'id':'id_video'}), required=False)
 
 	class Meta:
 		model = Feed
-		fields = ['post_info','image']
+		fields = ['post_info','image', 'video']
 
 
 class LikesForm(forms.ModelForm):

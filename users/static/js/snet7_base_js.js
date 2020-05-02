@@ -1,6 +1,6 @@
 // Users/base main javascript file
 
-// Datepiceet Jquery function
+// Datepicker Jquery function
 $(document).ready(function(){
 	$("#datepicker").datepicker({dateFormat: "dd/mm/yy", });
 });
@@ -44,6 +44,7 @@ $(document).ready(function(){
 			success: function(data){
 				var url_val;
 				url_val = data.url_val
+				$('#comment_btn').blur();
 				$(this_c).val("");
 				// if logged in user and commenting user same
 				if(data.value){
@@ -73,7 +74,8 @@ $(document).ready(function(){
 		});
 	});
 });
-// This Jquery is meant for the dorpdown show and hide
+
+// Search Dorp-down This Jquery is meant for the dorpdown show and hide
 $(document).ready(function(){
 	// Clicking in the input text box enables the dropdown div
 	$('#nav_search').on('click', function(){
@@ -164,20 +166,138 @@ $(document).ready(function(){
 	});
 }
 
+// Profile image loading
+
 $(document).ready(function(){
-	$('.profile-image-container').click(function(){
+	$('#profile_overlay').click(function(){
 		$('#inimgF').click();
 	});	
 });
 
+// Profile image uploading 
 
-$('#inimgF').change(function(){
-	if(this.files && this.files[0]){
-		var reader = FileReader();
-		$(reader).load(function(e){
-			$('profile_image').attr('src',e.target.result);
+$(document).ready(function(){
+	$('#inimgF').change(function(){
+		if(this.files && this.files[0]){
+			// var reader = FileReader();
+			// $(reader).load(function(e){
+			// 	$('#profile_image').attr('src',e.target.result);
+			// });
+			// reader.readAsDataURL(this.files[0]);
+			$('#profile_image').attr('src',URL.createObjectURL(this.files[0]));
+			$('#profile_image').onload = function(){
+				URL.revokeObjectURL(this.src);
+			}
+		}
+		var form = new FormData($('#profile_user_form')[0])
+		$.ajax({
+			url:'/profile/',
+			type:$('#profile_user_form').attr('method'),
+			data:form,
+			processData: false,
+			contentType: false,
+			beforeSend: function(){$('#loader_gif').show();},
+			complete: function(){$('#loader_gif').hide();},
+			success: function(data){
+				// $('#prof_sub_btn').blur();
+				console.log(data);
+			},
+			error: function(e){
+				console.log(e);
+			}
 		});
-		reader.readAsDataURL(this.files[0]);
-	}
+	});
 });
 
+
+
+// Cover photo change and display
+$(document).ready(function() {
+	$('#cover-chng-btn').click(function(e){
+		e.preventDefault();
+		$('#cover_photo_file').click();
+	});
+});
+
+// Cover photo upload to the server
+$(document).ready(function(){
+	// console.log('what about here');
+	$('#cover_photo_file').change(function(){
+		// console.log('change is working');
+		if(this.files && this.files[0]){
+			// var new_reader = new FileReader();
+			// $(new_reader).load(function(e){
+			// 	$('#cover_photo_img').attr('src', e.target.result);
+			// });
+			// new_reader.readAsDataURL(this.files[0]);
+			// console.log('what about here');
+			$('#cover_photo_img').attr('src', URL.createObjectURL(this.files[0])).width('820px').height('462px');
+			$('#cover_photo_img').onload = function(){
+				// $(this).css('height','820px');
+				// $(this).css('width','400px');
+				URL.revokeObjectURL(this.src);
+			}
+		}
+		// console.log($('.cover_pic_form')[0]);
+		var form = new FormData($('.cover_pic_form')[0]);
+		// console.log(form);
+		$.ajax({
+			url:$('.cover_pic_form').attr('action'),
+			type:$('.cover_pic_form').attr('method'),
+			data:form,
+			processData: false,
+			contentType: false,
+			beforeSend: function(){$('#cover_loader').show();},
+			complete: function(){$('#cover_loader').hide();},
+			success: function() {
+				$('#cover-chng-btn').blur();
+			},
+
+		});
+	});
+});
+
+// // Cover photo re-size which is not working properly 
+// $('#cover_photo_img').load(function(e){
+// 	$(this).css({'height':'820px', 'width':'400px'}).show();
+// 	// $(this).css('width','400').show();
+// })
+
+
+$(document).ready(function(){
+$('#profile_user_data_form').on('submit', function(e){
+	e.preventDefault();
+	var form = $('#profile_user_data_form');
+	console.log(form.attr('data-url'));
+	console.log(form.serialize());
+	$.ajax({
+		url: form.attr('data-url'),
+		type: form.attr('method'),
+		data: form.serialize(),
+		success: function(){
+			$('#prof_sub_btn').blur();
+		}
+
+		});
+	});
+});
+
+
+// Friend request form
+
+$(document).ready(function(){
+	$("#friend_req_form").on('submit', function(event){
+		event.preventDefault();
+		var form = $('#friend_req_form');
+		console.log(form);
+		$.ajax({
+			url: form.attr('action'),
+			type: form.attr('method'),
+			data: form.serialize(),
+			success: function(data){
+				$('#friend_req_btn').html('Request Sent');
+				$('#friend_req_btn').attr('class', 'btn btn-primary');
+			},
+		});
+	});
+});

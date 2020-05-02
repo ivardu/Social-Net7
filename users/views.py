@@ -8,6 +8,7 @@ from users.forms import (SignUpForm, ProfileUpdateForm, UserUpdateForm,
 	ProfileReadOnlyForm, UserReadOnlyForm, FriendsReqForm, 
 	FriendsAccpForm, CoverPhotoForm)
 from users.models import SnetUser, Friends
+from feed.models import Feed
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import (PasswordChangeView, 
 	PasswordResetView, PasswordResetDoneView
@@ -52,18 +53,30 @@ class PasswordReset(PasswordResetView):
 @login_required
 def profile(request):
 	if request.method == 'POST':
-		# print(request.user.profile)
+		# print(request.FILES)
+		data = {'success':'success'}
 		profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
 		user_form = UserUpdateForm(request.POST, instance=request.user)
-		if profile_form.is_valid() and user_form.is_valid():
+		print(request.POST)
+		if request.POST.get('email'):
+			if user_form.is_valid():
+				user_form.save() 
+				return JsonResponse(data)
+
+		if profile_form.is_valid():
 			profile_form.save()	
-			user_form.save()
-			messages.success(request, f'Successfully updated profile')
-			return HttpResponseRedirect(reverse('profile'))
+			# user_form.save()
+			# messages.success(request, f'Successfully updated profile')
+
+			return JsonResponse(data)
+
+
+
 	else:
 		profile_form = ProfileUpdateForm(instance=request.user.profile)
 		user_form = UserUpdateForm(instance=request.user)
 		cover_form = CoverPhotoForm(instance=request.user.usercover)
+		user_images = Feed.objects.filter(user=request.user)
 
 
 	return render(request, 'users/profile.html', locals())
@@ -73,8 +86,9 @@ def profile(request):
 @login_required
 def rprofile(request, id):
 	user = SnetUser.objects.get(pk=id)
-	p_form = ProfileReadOnlyForm(instance=user.profile)
-	u_form = UserReadOnlyForm(instance=user)
+	user_images = Feed.objects.filter(user=user)
+	profile_form = ProfileReadOnlyForm(instance=user.profile)
+	user_form = UserReadOnlyForm(instance=user)
 	freq_form = FriendsReqForm()
 
 	try:
@@ -107,7 +121,11 @@ def friends_req(request, id):
 			freq_obj.freq_usr = req_user
 			freq_obj.save()
 			# print(freq_obj.freq_usr, freq_obj.freq_accp)
-		return HttpResponseRedirect(reverse('rprofile', args=(accp_user.id,)))
+			data = {
+				'friends': 'friends'
+			}
+			
+		return JsonResponse(data)
 
 
 	# return HttpResponse('Fail')
@@ -146,7 +164,11 @@ def search(request):
 		# Results everything for a search match
 		if len(result.strip().split(' ')) > 1:
 			first, second = result.strip().split(' ')
-			name_list = SnetUser.objects.filter(Q(first_name__contains=first)|Q(last_name__contains=second)|Q(first_name__contains=second)|Q(last_name__contains=first)|Q(email__contains=first)|Q(email__contains=second))
+			name_list = SnetUser.objects.filter(Q(first_name__contains=first, last_name__contains=second)|Q(first_name__contains=second, last_name__contains=first)|Q(email__contains=''.join(result.split())))
+			# |Q(email__contains=first)|Q(email__contains=second)
+			print(name_list)
+
+
 		else:
 			first = result.strip() 
 			name_list = SnetUser.objects.filter(Q(first_name__contains=first)|Q(last_name__contains=first)|Q(email__contains=first))
@@ -196,8 +218,11 @@ def cover_photo(request):
 		form = CoverPhotoForm(request.POST, request.FILES, instance=user.usercover)
 		if form.is_valid():
 			form_obj = form.save(commit=False)
+			# form_obj.cover_photo
 			form_obj.user = user
 			form_obj.save()
+			print('am I success')
+			print(form_obj.cover_photo)
 		else:
 			print(form.errors)
 		return HttpResponseRedirect(reverse('profile'))

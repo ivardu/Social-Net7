@@ -27,7 +27,10 @@
 				<div class="row">
 					{% if item.image %}
 						<img src="{{item.image.url}}" width="400" height="400">
-					{% else %}
+					{% elif item.video %}
+						<video width="400" height="250" controls>
+							<source src="{{item.video.url}}" type="video/mp4">
+						</video>
 					{% endif %}
 				</div>
 				<!-- Likes Section -->

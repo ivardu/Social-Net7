@@ -41,7 +41,7 @@
 					<li class="nav-item">
 					    <form id="search_form" method="post" data_url="{% url 'search' %}">
 					    	{% csrf_token %}
-						    <div id='nav_search' class="input-group input-group-sm">
+						    <div id='nav_search' class="input-group-sm">
 						      	<input id='ip_nav_search'  type="search" class="form-control" name="search" placeholder="Search People, Friends" aria-label="Search">
 <!-- 						      	<div class="input-group-append">
 						     		<button class="btn btn-sm btn-success my-2 my-sm-0" type="submit">Search</button>
@@ -64,7 +64,7 @@
 		    			{% if request.user.fname_empty %}
 		    			<div class="dropdown">
 		    				<a class="nav-link text-white" href="{% url 'profile' %}" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				    			<img class=" rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="25"><span class="small">{{request.user.truncate|title}}</span></a>
+				    			<img class="img-thumbnail navbar-profile-image rounded-circle" src="{{request.user.profile.image.url}}"><span class="small">{{request.user.truncate|title}}</span></a>
 							</a>
 				    		<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 				    			<a class="dropdown-item small" href="{% url 'profile' %}">Profile</a>
@@ -74,7 +74,7 @@
 		    			{% else %}
 		    			<div class="dropdown">
 		    				<a class="nav-link text-white" href="{% url 'profile' %}" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			    				<img class="rounded-circle" src="{{request.user.profile.image.url}}" width="25" height="25">{{request.user.first_name|title}}</a>
+			    				<img class="img-thumbnail navbar-profile-image rounded-circle" src="{{request.user.profile.image.url}}">{{request.user.first_name|title}}</a>
 							</a>
 			    			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 			    				<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>

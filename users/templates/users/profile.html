@@ -1,8 +1,8 @@
 {% extends 'users/base.html' %}
 {% load crispy_forms_tags %}
-<!-- {% load i18n %} -->
+{% load static %}
 {% block body %}
-<div class="w-50 mx-auto">
+<!-- <div class="w-50 mx-auto">
 	{% if messages %}
 		{% for message in messages %}
 		<div class="shadow-lg alert alert-success" align="center">
@@ -10,29 +10,40 @@
 		</div>
 		{% endfor %}
 	{% endif %}
-</div>
-<div class="container col-md-7">
-	<div class="container wrapper_container"> 
+</div> -->
+<div class="container">
+	<div class="container wrapper_container col-md-10"> 
+		<!-- Cover Photo -->
 		<div id="cover_photo_div">
-			<form method="post" action="{% url 'cover_pic' %}" enctype='multipart/form-data'>
+			<form class='cover_pic_form' method="post" action="{% url 'cover_pic' %}" enctype='multipart/form-data'>
 				{% csrf_token %}
-				<div class="cover-img-disp-blc col-sm-12">
-					<label for='cover_id'>
-						<img src="{{request.user.usercover.cover_photo.url}}" >
-					</label>
-					{{cover_form.cover_photo}}
+				<div class="cover-img-disp-blc text-center">
+					<img id='cover_photo_img' src="{{request.user.usercover.cover_photo.url}}">
+					<input id="cover_photo_file" type="file" name="cover_photo">
 				</div>
-				<input type="submit" name="submit" value="submit">
+				<div id='cover_loader'>
+					<img id="cover_loader" src="{% static 'components/cover_loader.gif' %}">
+				</div>
+				<div class="text-center" id='over-cover-img-disp-blc'>
+					<button id="cover-chng-btn" class="btn btn-sm btn-light">Change Cover</button>
+				</div>
+
 			</form>
 		</div>
-		<div class="profile-image-container">
-			<label for="inimgF">
+		<!-- Profile image -->
+		<div id="profile-image-container">
 			<img id='profile_image' class="img-thumbnail rounded-circle" src="{{request.user.profile.image.url}}">
-			</label>
+			<div attr='Change Picture' id="profile_overlay">
+				<h6 class="small text-center p-2">Change Photo</h6>
+			</div>
+			<div id='loader_gif'>
+				<img id='loader_img' src="{% static 'components/loader.gif' %}">
+			</div>
 		</div>
-		<div class="row shadow-lg" id='second_part_div_prof'>
+		<!-- Profile Name and Email -->
+		<div class="row rower" id='second_part_div_prof'>
 			<div class="col-md-6">
-				<div class="row offset-1">
+				<div class="offset-1">
 					<div class="col-sm-8" id='prof_nam_detail'>
 						<div>
 							{% if request.user.fname_empty %}
@@ -45,39 +56,62 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6 mx-auto">
+			<div class="col-md-6">
 			</div>
 		</div>
-	</div>
-	<div class="container" id="profile-user-form-cont" >
-			<div class="profile-user-form shadow-lg">
-				<form method="post" enctype="multipart/form-data">
+		<!-- User Details for update -->
+		<div class="profile-user-form">
+			<div class="d-flex flex-row">
+				<form id="profile_user_form" method="post" enctype="multipart/form-data">
 					{% csrf_token %}
-					<input id="inimgF" type="file" name="image"/>
-					<div class="form-row">
-						<div class="col">
-							{{profile_form.dob}}
+					<input id="inimgF" type="file" name="image"/>		
+					<div class="p-2">
+						<label for='datepicker' class="prof_det_label">DOB</label>
+						{{profile_form.dob}}
+					</div>
+				</form>
+				<form id='profile_user_data_form' method="post" data-url='{% url "profile" %}'>
+					<div class="d-flex flex-row">
+						{% csrf_token %}
+						<div class="p-2">
+							<label for='id_email' class="prof_det_label">Email*</label>
+							{{user_form.email}}	
 						</div>
-						<div class="col">
-							{{user_form.email}}
+						<div class="p-2">
+							<label for="id_first_name" class="prof_det_label">First Name</label>
+							{{user_form.first_name}}	
 						</div>
-						<div class="col">
-							{{user_form.first_name}}
-						</div>
-						<div class="col">
+						<div class="p-2">
+							<label for="id_last_name" class="prof_det_label">Last Name</label>
 							{{user_form.last_name}}
 						</div>
-						<!-- 	{{profile_form.dob}}
-							{{user_form}} -->
 					</div>
-					<div class="p-1" align="center">
-						<a class="btn btn-sm btn-warning" href="{% url 'profile' %}">Cancel</a>
-						<input class="btn btn-sm btn-success" type="submit" name="submit" value="Update" >	
+					<div class="d-flex flex-row-reverse">
+						<div class="p-2 mt-2 bd-highlight-">
+							<input id='prof_sub_btn' class="btn btn-sm btn-success" type="submit" name="submit" value="Update">	
+						</div>
+						<div class="p-2 mt-2 bd-highlight">
+							<a class="btn btn-sm btn-warning" href="{% url 'profile' %}">Cancel</a>
+						</div>
 					</div>
-
 				</form>
 			</div>
-		<!-- </div> -->
+		</div>
 	</div>	
+	<!-- User Posts Images and Videos -->
+	<div class="container shadow-lg col-md-10" id="profile_posts_container">
+		<div class="d-flex p-3">
+			<h3 class="small">Your posts..!!</h3>
+		</div>
+		<div class="d-flex flex-wrap bg-light p-2">
+			{% for feed_item in user_images %}
+				{% if feed_item.image %}
+					<div class="p-2 border">
+						<img class="profile_image_flex" src="{{feed_item.image.url}}">
+					</div>
+				{% endif %}
+			{% endfor %}			
+		</div>
+	</div>		
 </div>
 {% endblock body %}
