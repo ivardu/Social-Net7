@@ -12,6 +12,7 @@ from users.models import SnetUser
 
 from django.views.generic.edit import FormView, UpdateView, DeleteView
 from django.views.generic import ListView
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 @login_required
@@ -120,6 +121,27 @@ def comments(request, id):
 		print('Comments Not Working')
 
 	# return HttpResponseRedirect(reverse('feed:feed'))
+
+@login_required
+def comment_update(request, id):
+	try:
+		comment_instance = Comments.objects.get(id=id)
+		# print(request.POST)
+	except Exception as e:
+		print(e)
+
+	if request.method == 'POST':
+		comment_update_form = CommentsForm(request.POST, instance=comment_instance)
+		if comment_update_form.is_valid():
+			obj = comment_update_form.save()
+
+			data = {'comment_val':obj.comments}
+
+			return JsonResponse(data) 
+	# 	else:
+	# 		print(comment_update_form.errors)
+	# else:
+	# 	print(request.method, comment_instance)
  
 @method_decorator(login_required, name='dispatch')
 class MyPostList(ListView):

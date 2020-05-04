@@ -1,5 +1,7 @@
 // Users/base main javascript file
 
+
+
 // Datepicker Jquery function
 $(document).ready(function(){
 	$("#datepicker").datepicker({dateFormat: "dd/mm/yy", });
@@ -49,25 +51,25 @@ $(document).ready(function(){
 				// if logged in user and commenting user same
 				if(data.value){
 					if(data.fname_empty){
-						$(data.id).prepend("<li class='list-group-item p-0'><small><a href='"+url_val+"'>"+data.user+"</a>"+" "+data.comments+"</small></li>")
+						$(data.id).prepend("<li class='list-group-item p-0'><div class='d-flex flex-row'><div><a class='small' href='"+url_val+"'>"+data.user+"</a><small>"+" "+data.comments+"</small> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></div></li>")
 						// console.log("<li class='list-group-item p-0'><small><a href="+url_val+">"+data.user+"</a>"+data.comments+"</small></li>")
 					}
 					// Updating the Comment Username as per the first_name saved in DB
 					else{
 						// console.log('first else')
-						$(data.id).prepend("<li class='list-group-item p-0'><small><a href='"+url_val+"''>"+data.user+"</a>"+" "+data.comments+"</small></li>")
+						$(data.id).prepend("<li class='list-group-item p-0'><div class='d-flex flex-row'><div><a class='small' href='"+url_val+"'>"+data.user+"</a><small>"+" "+data.comments+"</small> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></div></li>")
 					}
 				}
 				// if the logged in user and commenting user are different
 				else{
 					// console.log("in else")
 					if(data.fname_empty){
-						$(data.id).prepend("<li class='list-group-item p-0'><small><a href=/"+url_val+"''>"+ data.user +"</a>"+" "+data.comments+"</small></li>")
+						$(data.id).prepend("<li class='list-group-item p-0'><div class='d-flex flex-row'><div><a class='small' href='"+url_val+"'>"+data.user+"</a><small>"+" "+data.comments+"</small> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></div></li>")
 					}
 					// Updating the Comment Username as per the first_name saved in DB
 					else{
 						// console.log('second else')
-						$(data.id).prepend("<li class='list-group-item p-0'><small><a href='"+url_val+"''>"+ data.user +"</a>"+" "+data.comments+"</small></li>")
+						$(data.id).prepend("<li class='list-group-item p-0'><div class='d-flex flex-row'><div><a class='small' href='"+url_val+"'>"+data.user+"</a><small>"+" "+data.comments+"</small> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></div></li>")
 					}
 				}
 			},
@@ -300,4 +302,120 @@ $(document).ready(function(){
 			},
 		});
 	});
+});
+
+
+// Editing the comment section
+
+// Clicking on the Edit button of comment
+$(document).ready(function(){
+	$('.edit_button').on('click', function(){
+		var comment_value = $(this).parent().children('span').text();
+		// console.log(comment_value);
+		$(this).parent().children('span').replaceWith("<form class='comm-update-form' class='p-1' method='post'><input id='comment_ip' name='comments' class='form-control-sm' type='text'><input class='correct_img' type='image' src='/static/components/Correct.png'><input class='cancel_img' id='cncl_gim' type='image' src='/static/components/Cancel.png'></form>");
+		$('.correct_img').css({
+				'width': '30px',
+				'height':'30px'
+		});
+		$('.cancel_img').css({
+				'width': '30px',
+				'height':'30px'
+		});
+		var edit_ = $(this);
+		edit_.hide();
+		$(this).closest('div').find('input[type="text"]').attr('value', comment_value);
+		// console.log($(this).closest('div').find('li').attr('id'))
+		// console.log($(this).closest('#comment_ip').attr('value', comment_value));
+		$('.cancel_img').on('click', function(){
+			$(this).closest('.comm-update-form').after("<input class='edit_button' src='/static/components/edit_comment.png/' type='image' name='Edit'>").replaceWith('<span class="small">'+comment_value+'</span>');
+			// edit_.show();
+		});
+
+		// Comment Form Update
+		$('.comm-update-form').on('submit', function(e){
+		// 	console.log('Why you are not working');
+			e.preventDefault();
+			var ider = $(this).closest('li').attr('id');
+			var comment_form = $('.comm-update-form', this);
+			// console.log('/comment_update/'+ider);
+			// console.log($('.comm-update-form').attr('method'));
+				$.ajax({
+					context: this,
+					url: 'comment_update/'+ider,
+					type: $('.comm-update-form').attr('method'),
+					data:{
+						// 'csrfmiddlewaretoken': token,
+						'comments': $('#comment_ip').val(), 
+					},
+					success: function(data){
+						// console.log();
+						$(this).replaceWith('<span class="small">'+data.comment_val+'</span>');
+						edit_.show();
+
+					}
+				});
+
+		});
+	});
+});
+
+
+
+// $(document).ready(function(){
+// 	// var token = $('input[name="csrfmiddlewaretoken"]').val();
+
+// 		$('#comment_ip').on('keyup', function(e){
+// 		// 		console.log('Why you are not working');
+// 		// e.preventDefault();
+// 		console.log('coming here..?');
+// 		var ider = $(this).closest('li').attr('id');
+// 		var comment_form = $('.comm-update-form', this);
+		
+// 		console.log('/comment_update/'+ider);
+
+		
+// 	});
+// });
+
+
+$(document).ready(function() {
+	// body...
+	function getCookie(name) {
+             var cookieValue = null;
+             if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 for (var i = 0; i < cookies.length; i++) {
+                     var cookie = jQuery.trim(cookies[i]);
+                     // Does this cookie string begin with the name we want?
+                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                         break;
+                     }
+                 }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+    function csrfSafeMethod(method){
+    	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method))
+    }
+
+    $.ajaxSetup({
+    	beforeSend: function(xhr, settings){
+    		if(!csrfSafeMethod(settings.type) && !this.crossDomain){
+    			xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    		}
+    	}
+    });
+
+
+
+  //        var csrftoken = getCookie('csrftoken');
+	 //     // if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) 
+	 //     	if (!this.crossDomain){
+	 //             // Only send the token to relative URLs i.e. locally.
+	 //             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+	 //         }
+	 //     } 
+		// });
 });

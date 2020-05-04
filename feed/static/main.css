@@ -275,12 +275,34 @@ div#profile-image-container:hover div#profile_overlay{
 	margin: 0px;
 }
 
-#edit_btn_img{
-	width: 30px;
-	height: 30px;
-/*	display: block;
-	position: relative;*/
+.edit_button{
+	width: 20px;
+	height: 15px;
+	outline: none;
+	/*position: relative;*/
 }
+.heart{
+	width:25px;
+	height: 25px;
+}
+.input_file_edit{
+	display: none;
+}
+.comment_li{
+	background-color: #F8F8F8;
+}
+
+.correct_img{
+	width: 30px,
+	height 30px
+}
+
+.span_dimen{
+	display: block;
+	width: 330px;
+	word-wrap: break-word;
+}
+
 /*#edit_btn_img::after{
 	top: 0px;
 	bottom: 0px;

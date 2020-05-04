@@ -98,8 +98,8 @@
 				<!-- Comments Section -->
 				<div class="row mr-auto">
 					<form class="comment_form" comment-url="{% url 'feed:comments' item.id %}" method="post">
-						{% csrf_token %}
 						<div class="form-group form-inline mb-0">
+							{% csrf_token %}
 							{{comment_form}}
 							<input id='comment_btn' class="btn btn-sm btn-info" type="submit" name="submit" value="comment">
 						</div>
@@ -111,45 +111,30 @@
 					<ul class="list-group list-group-flush" id=Feed{{item.id}}>
 					{% if item.comments_set.all %}
 						{% for item in item.comments_set.all %}
-						<li class="list-group-item p-0">
-							<!-- <hr class="p-0 m-0 b-light"> -->
-							<div class="row">
-							{% if item.user == request.user %}
-								{% if item.user.fname_empty %}
-								<div class="col-sm-6">
-									<div class="">
-									<small><a href="{% url 'profile' %}">{{item.user.truncate|title}} </a>{{item.comments}}</small>
-									</div>
-								</div>
-								<div class="col-sm-6 d-flex flex-row-reverse">
-									<div>
-										<label for='edit_button'>
-										<img id='edit_btn_img' src="{% static 'components/edit_comment.png' %}">
-										</label>
-										<input id='edit_button' class="" type="submit" name="Edit" value="Edit">
-									</div>
-								</div>
+						<li class="list-group-item p-0 comment_li" id={{item.id}}>
+								{% if item.user == request.user %}
+									{% if item.user.fname_empty %}							
+										<div class="d-flex flex-row">
+											<a class="small pr-1" href="{% url 'profile' %}">{{item.user.truncate|title}} </a><span class="span_dimen small pr-1">{{item.comments}}</span>
+											<input class='edit_button' src="{% static 'components/edit_comment.png' %}" type="image" name="Edit" value="Edit">
+										</div>
+									{% else %}
+										<div class="d-flex flex-row">
+											<a class="small pr-1" href="{% url 'profile'%}">{{item.user.first_name|title}} </a><span class="span_dimen small pr-1">{{item.comments}}</span>
+											<input class='edit_button' src="{% static 'components/edit_comment.png' %}" type="image" name="Edit" value="Edit">
+										</div>
+									{% endif %}
 								{% else %}
-								<div class="col-sm-6">
-									<small><a href="{% url 'profile'%}">{{item.user.first_name|title}} </a> {{item.comments}}</small>
-								</div>
-								<div class="col-sm-6 d-flex flex-row-reverse">
-									<div>
-									<label for='edit_button'>
-									<img id='edit_btn_img' src="{% static 'components/edit_comment.png' %}">
-									</label>
-									<input class="" type="submit" name="Edit" value="Edit">
+									{% if item.user.fname_empty %}
+									<div class="d-flex flex-row">
+										<a class="small pr-1" href="{% url 'rprofile' item.user.id %}">{{item.user.truncate|title}}</a> <span class="span_dimen small pr-1"> {{item.comments}}</span>
 									</div>
-								</div>
+									{% else %}
+									<div class="d-flex flex-row">
+										<a class="small pr-1" href="{% url 'rprofile' item.user.id %}">{{item.user.first_name|title}}</a> <span class="span_dimen small pr-1">{{item.comments}}</span>
+									</div>
+									{% endif %}
 								{% endif %}
-							{% else %}
-								{% if item.user.fname_empty %}
-								<small><a href="{% url 'rprofile' item.user.id %}">{{item.user.truncate|title}}</a> {{item.comments}}</small>
-								{% else %}
-									<small><a href="{% url 'rprofile' item.user.id %}">{{item.user.first_name|title}}</a> {{item.comments}}</small>
-								{% endif %}
-							{% endif %}
-							</div>
 						</li>
 						{% endfor %}	
 					{% endif %}

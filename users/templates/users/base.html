@@ -18,6 +18,7 @@
 
 	<link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
 	<script type="text/javascript" src="{% static 'js/snet7_base_js.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/js_csrr_xhr_stp.js' %}"></script>
 
 </head>
 <body class='poorthi_sarirammu'>
@@ -54,9 +55,9 @@
 			    <ul class="navbar-nav ml-auto">
 			    	<li class="nav-item">
 			    		{% if request.user.friend_request.count == 0 %}
-			    			<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><img src="{% static 'components/empty_heart.png' %}" width="30" height="30"></a>
+			    			<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><img class="heart" src="{% static 'components/empty_heart.png' %}"></a>
 			    		{% else %}
-			    			<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><img src="{% static 'components/filled_love.png' %}" width="25" height="25"></a>
+			    			<a class="nav-link text-white" href="{% url 'friend_req_received' %}"><img class="heart" src="{% static 'components/filled_love.png' %}"></a>
 			    		{% endif %}
 			    	</li>
 					<!-- Profile Section -->
