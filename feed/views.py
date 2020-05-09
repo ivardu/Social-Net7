@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from feed.forms import FeedForm, LikesForm, CommentsForm
+# , FeedPostEdit
 from feed.models import Feed, Likes, Comments
 from users.models import SnetUser
 
@@ -162,8 +163,32 @@ class MyPostList(ListView):
 @method_decorator(login_required, name='dispatch')
 class FeedEditView(UpdateView):
 	model = Feed
-	template_name = 'feed/feed_edit.html'
-	fields = ['post_info','image']
+	# template_name = 'feed/feed_edit.html'
+	fields = ['post_info','image','video']
+	# form_class=FeedPostEdit
+	def result(self):
+		self.object = self.get_object()
+		# print(self.object)
+		image = ['' if self.object.image == '' else self.object.image.url]
+		video = ['' if self.object.video == '' else self.object.video.url]
+		data = {
+			'image':image[0],
+			'video':video[0],
+			'post_info':self.object.post_info
+		}
+		return data
+
+	# def form_valid()
+
+	def form_valid(self, form):
+		self.object = form.save()
+		data = self.result()
+		return JsonResponse(data)
+
+	def get(self, request, *args, **kwargs):
+		data = self.result()
+		return JsonResponse(data)
+
 
 @method_decorator(login_required, name='dispatch')
 class FeedDeleteView(DeleteView):

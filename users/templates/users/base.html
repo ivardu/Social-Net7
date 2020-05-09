@@ -18,7 +18,8 @@
 
 	<link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
 	<script type="text/javascript" src="{% static 'js/snet7_base_js.js' %}"></script>
-	<script type="text/javascript" src="{% static 'js/js_csrr_xhr_stp.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/fd_ap_fe_lce_ev.js' %}"></script>
+	
 
 </head>
 <body class='poorthi_sarirammu'>
@@ -43,7 +44,7 @@
 					    <form id="search_form" method="post" data_url="{% url 'search' %}">
 					    	{% csrf_token %}
 						    <div id='nav_search' class="input-group-sm">
-						      	<input id='ip_nav_search'  type="search" class="form-control" name="search" placeholder="Search People, Friends" aria-label="Search">
+						      	<input id='ip_nav_search'  type="search" class="form-control" name="search" placeholder="Search People, Friends" aria-label="Search" autocomplete="off">
 <!-- 						      	<div class="input-group-append">
 						     		<button class="btn btn-sm btn-success my-2 my-sm-0" type="submit">Search</button>
 						      	</div> -->

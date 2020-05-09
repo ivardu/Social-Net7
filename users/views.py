@@ -109,10 +109,13 @@ def rprofile(request, id):
 def friends_req(request, id):
 	req_user = request.user
 	accp_user = SnetUser.objects.get(pk=id)
-		
-		# new_frn_req = Friends.objects.filter(freq_accp=req_user).filter(friends='No')
+	print('am I here..?')
+	try:	
+		avod_dupl_freq = Friends.objects.filter(freq_accp=accp_user).filter(freq='Yes').filter(freq_usr=req_user)
+	except e as Exception:
+		printe(e)
 
-	if request.method == 'POST':
+	if request.method == 'POST' and not avod_dupl_freq:
 		form = FriendsReqForm(request.POST)
 		if form.is_valid():
 			freq_obj = form.save(commit=False)
@@ -166,7 +169,7 @@ def search(request):
 			first, second = result.strip().split(' ')
 			name_list = SnetUser.objects.filter(Q(first_name__contains=first, last_name__contains=second)|Q(first_name__contains=second, last_name__contains=first)|Q(email__contains=''.join(result.split())))
 			# |Q(email__contains=first)|Q(email__contains=second)
-			print(name_list)
+			# print(name_list)
 
 
 		else:
@@ -174,12 +177,25 @@ def search(request):
 			name_list = SnetUser.objects.filter(Q(first_name__contains=first)|Q(last_name__contains=first)|Q(email__contains=first))
 	
 		if name_list:
+			# print(name_list)
 			for user in name_list:
-				frnd = Friends.objects.filter(friends='Yes').filter(Q(freq_usr=user)|Q(freq_accp=user)).filter(Q(freq_usr=request.user)|Q(freq_accp=request.user))
-				if frnd and frnd[0].friends == 'Yes' :
+				frnd = Friends.objects.filter(Q(freq_usr=user)|Q(freq_accp=user)).filter(Q(freq_usr=request.user)|Q(freq_accp=request.user))
+				# print(user, request.user)
+				# print(frnd)
+				if user == request.user:
+					friends = 'Your Profile' 
+				elif frnd and frnd[0].friends == 'Yes':
 					friends = 'Friends'
+				elif frnd and frnd[0].freq == 'Yes':
+					# friends = 'Request Sent'
+					if frnd[0].freq_usr_id == request.user.id:
+						friends = 'Request Sent'
+					elif frnd[0].freq_accp_id == request.user.id:
+						friends = 'Accept'
 				else:
-					friends = 'Not Friends'
+					friends = 'Send Request'
+
+				# print(friends)
 
 				value = (request.user.id == user.id)
 				data_in = {}

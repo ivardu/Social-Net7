@@ -34,7 +34,7 @@
 			</div>
 			<div class="col-md-6 d-flex flex-row-reverse">
 				<div class="p-2">
-					{% if freq_sent.freq_accp == user %}
+					{% if freq_sent.freq_accp == request.user %}
 					<!-- Accepting the Friend Request -->
 					<form  method="post" action="{% url 'friends_accp' user.id %}">
 						{% csrf_token %}

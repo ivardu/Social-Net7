@@ -37,7 +37,7 @@
 		</div>
 	</div>
 </div>
-<div class="container col-md-5 ">
+<div class="post_edit_parent container col-md-5 ">
 	{% for item in page_obj %}
 		{% if item.user.id in request.user.frn_list_ids or item.user == request.user %}
 		<!-- <h1>{{item.id}}</h1> -->
@@ -64,28 +64,31 @@
 					{% endif %}
 				{% endif %}
 				</div>
-				<!-- Feed Post User Email  -->
-<!-- 				<div class="row">
-					<small>{{item.user.email}}</small>
-				</div> -->
-				<!--  Feed Post timeline  -->
+							<!-- Feed Post User Email  -->
+							<!-- 				<div class="row">
+										<small>{{item.user.email}}</small>
+									</div> -->
+									<!--  Feed Post timeline  -->
 				<div class="row">
 					<h6 class="small">{{item.feed_post_time}}</h6>
 					<!-- <span class="small">{{item.date}}</span> -->
 				</div>
-				<!-- Feed post info or about the post -->
-				<div class="row mt-2 mb-1">
-					<small>{{item.post_info}}</small>
-				</div>
-				<!-- Feed Post image section -->
-				<div class="row">
-					{% if item.image %}
-						<img src="{{item.image.url}}" width="400" height="400">
-					{% elif item.video %}
-					<video width="400" height="250" controls>
-						<source src="{{item.video.url}}" type="video/mp4">
-					</video>
-					{% endif %}
+
+				<div class="replacer_editor" id="{{item.id}}">
+					<!-- Feed post info or about the post -->
+					<div class="row mt-2 mb-1">
+						<span class="small post_info">{{item.post_info}}</span>
+					</div>
+					<!-- Feed Post image section -->
+					<div class="row">
+						{% if item.image %}
+							<img class="post_img_url" src="{{item.image.url}}" width="400" height="400">
+						{% elif item.video %}
+						<video width="400" height="250" controls>
+							<source src="{{item.video.url}}" type="video/mp4">
+						</video>
+						{% endif %}
+					</div>
 				</div>
 				<!-- Likes Section -->
 				<div class="row mr-auto">
@@ -117,6 +120,7 @@
 										<div class="d-flex flex-row">
 											<a class="small pr-1" href="{% url 'profile' %}">{{item.user.truncate|title}} </a><span class="span_dimen small pr-1">{{item.comments}}</span>
 											<input class='edit_button' src="{% static 'components/edit_comment.png' %}" type="image" name="Edit" value="Edit">
+											
 										</div>
 									{% else %}
 										<div class="d-flex flex-row">
@@ -149,7 +153,7 @@
 					<a href='' class="test text-decoration-none" id="dropdownMenuButton" data-toggle="dropdown">
 					</a>
 					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-					 <a class="dropdown-item small" href="{% url 'feed:feed_edit' item.id %}">Edit</a>
+					 <a class="post_edit dropdown-item small" href="{% url 'feed:feed_edit' item.id %}">Edit</a>
 					 <a class="dropdown-item small" href="{% url 'feed:feed_del' item.id %}">Delete</a>
 					</div>
 				 </div>
@@ -223,31 +227,8 @@ $('#fi_disp')
 $("#id_image").change(readURL);
 </script>
 <script type="text/javascript">
-$('#id_post_info').click(function(){
-	$('#id_post_info').css({
-		'height':'75px',
-	});
-}).blur(function(){
-	$('#id_post_info').css({
-		'height':'25px',
-	});
-});
+
 </script>
 <script type="text/javascript">
-$(document).ready(function() {
-	$('#feed_form_submit').prop('disabled', true);
-	function validatePostData(){
-		// console.log($('#id_image').get(0).files.length !== 0)
-		var postData = $('#id_post_info').val() !== '' || $('#id_image').get(0).files.length !== 0 || $('#id_video').get(0).files.length !==0 ;
-		// console.log(!postData)
-		$('#feed_form_submit').prop('disabled', !postData);
-	}
 
-	// call the validatePostData function when there is keyup in input text
-	$('#id_post_info').on('keyup', validatePostData);
-	// call the validatePostData function when user inputs the image file
-	$('#id_image').change(validatePostData);
-	$('#id_video').change(validatePostData);
-});
-</script>
 {% endblock script %}

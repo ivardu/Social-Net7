@@ -1,0 +1,105 @@
+<div class='replaced_editor' id='p_ed_dat_r'>
+	<form class="re_post" method='post' enctype="multipart/form-data" data_url='/edit/feed_id/'>
+		<div class='ip_div row mt-2 mb-1'>
+			<input class='post_ip_txt' type='text' name='post_info' value=''>
+		</div>
+		<div class='row' id='img_video'>
+			<img class='img_cont' src='' width='400' height='400'>
+			<video class='vdo_cont' width='400' height='250' controls>
+				<source src='' type='video/mp4'>
+			</video>
+		</div>
+		<div class='d-flex flex-row fe_ca_up' align='center'>
+			<div class='col-sm-2 image-upload'>
+				<label for='id_for_image'>
+					<img id='pe_up_image' src='/static/components/Image_upload.png/' width='30' height='30'>
+				</label>
+				<input class='input_post_file_iedit' type='file' name='image' id='id_for_image'>
+			</div>
+			<div class='col-sm-2 video-upload'>
+				<label for='id_for_video'>
+					<img id='pe_video_upload' src='/static/components/video_upload.png'>
+				</label>
+				<input type='file' class='input_post_file_vedit' name='video' id='id_for_video'>
+			</div>
+			<div class='col-sm-8 d-flex flex-row-reverse'>
+				<input class='btn btn-sm btn-success m-1' type='submit' name='Update' value='Update'>
+				<button type='button' id='pe_cancel_btn' class='btn btn-sm btn-warning m-1'>Cancel</button>
+			</div>
+		</div>
+	<form>
+</div>
+<div id='p_ed_dat_a'>
+	<div class="replaced_editor">
+		<!-- Feed post info or about the post -->
+		<div class="row mt-2 mb-1">
+			<span class="small post_info"></span>
+		</div>
+		<!-- Feed Post image section -->
+		<div class="row">
+			<img class="post_img_url" src="" width="400" height="400">
+			<video width="400" height="250" controls>
+				<source src="" type="video/mp4">
+			</video>
+		</div>
+<!-- 		<div class='d-flex flex-row fe_ca_up' align='center'>
+			<div class='col-sm-2 image-upload'>
+				<label for='id_image'>
+					<img id='up_image' src='/static/components/Image_upload.png/' width='30' height='30'>
+				</label>
+				<input class='input_file_edit' type='file' name='image' id='id_image'>
+			</div>
+			<div class='col-sm-2 video-upload'>
+				<label for='id_video'>
+					<img id='video_upload' src='/static/components/video_upload.png'>
+				</label>
+				<input type='file' class='input_file_edit' name='video' id='id_video'>
+			</div>
+			<div class='col-sm-8 d-flex flex-row-reverse'>
+				<input class='btn btn-sm btn-success m-1' type='submit' name='Update' value='Update'>
+				<button type='button' id='cancel_btn' class='btn btn-sm btn-warning m-1'>Cancel</button>
+			</div>
+		</div> -->
+	</div>
+</div>
+
+
+
+<!-- // console.log(replacer_editor);
+
+		// var html_prace ="<div class='replaced_editor'>"
+		// 					+"<form method='post' data_url='/edit/"+feed_id+"/'>"
+		// 						+"<div class='ip_div row mt-2 mb-1'>"
+		// 							+"<input class='post_ip_txt' type='text' name='post_info' value='"+post_info+"'>"
+		// 						+"</div>"
+		// 						+"<div class='row'>"
+		// 							+"<img class='img_cont' src='"+img_url+"' width='400' height='400' alt='Iam replaced'>"
+		// 							+"<video class='vdo_cont' width='400' height='250' controls>"
+		// 								+"<source src='"+vdo_url+"' type='video/mp4'>"
+		// 							+"</video>"
+		// 						+"</div>"
+		// 					+"<form>"
+		// 					+"<div class='d-flex flex-row' align='center'>"
+		// 						+"<div class='col-sm-2 image-upload'>"
+		// 							+"<label for='id_image'>"
+		// 								+"<img id='up_image' src='/static/components/Image_upload.png' width='30' height='30'>"
+		// 							+"</label>"
+		// 							+"<input class='input_file_edit' type='file' name='image' id='id_image'>"
+		// 						+"</div>"
+		// 						+"<div class='col-sm-2 video-upload'>"
+		// 							+"<label for='id_video'>"
+		// 								+"<img id='video_upload' src='/static/components/video_upload.png'>"
+		// 							+"</label>"
+		// 							+"<input type='file' class='input_file_edit' name='video' id='id_video'>"
+		// 						+"</div>"
+		// 						+"<div class='col-sm-8 d-flex flex-row-reverse'>"
+		// 							+"<input class='btn btn-sm btn-success m-1' type='submit' name='Update' value='Update'>"
+		// 							+"<button type='button' class='btn btn-sm btn-warning m-1'>Cancel</button>"
+		// 						+"</div>"
+		// 					+"</div>"
+		// 				+"</div>"
+
+
+ 
+		// console.log(img_url);
+		// $(this).parents('div .row').find('.replacer_editor').replaceWith(html_prace); -->
