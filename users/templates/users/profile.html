@@ -47,9 +47,9 @@
 					<div class="col-sm-8" id='prof_nam_detail'>
 						<div>
 							{% if request.user.fname_empty %}
-								<span>{{request.user.truncate|title}}</span>
+								<span id='title'>{{request.user.truncate|title}}</span>
 							{% else %}
-								<span>{{request.user.first_name}} {{request.user.last_name}}</span>
+								<span id='title'>{{request.user.first_name}} {{request.user.last_name}}</span>
 							{% endif %}
 						</div>
 						<span class="small">{{request.user.email}}</span>

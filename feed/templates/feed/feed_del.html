@@ -37,7 +37,9 @@
 			<div class="row">
 				<form method="post">
 					{% csrf_token %} 
-					<img src="{{object.image.url}}" width="400" height="400">
+					{% if object.image %}
+						<img src="{{object.image.url}}" width="400" height="400">
+					{% endif %}
 					<div class="p-2" align="center">
 						<h6 class="small bg-light text-muted">Are you sure you want to delete this feed..?</h6>
 						<a class="btn btn-sm btn-warning" href="{% url 'feed:feed' %}">Cancel</a>

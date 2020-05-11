@@ -60,12 +60,14 @@ def profile(request):
 		print(request.POST)
 		if request.POST.get('email'):
 			if user_form.is_valid():
-				user_form.save() 
+				obj = user_form.save() 
+				data.update({'title':f'{obj.first_name} {obj.last_name}'})
 				return JsonResponse(data)
 
 		if profile_form.is_valid():
-			profile_form.save()	
+			obj = profile_form.save()	
 			# user_form.save()
+			
 			# messages.success(request, f'Successfully updated profile')
 
 			return JsonResponse(data)

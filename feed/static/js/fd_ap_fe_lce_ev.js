@@ -117,25 +117,25 @@ $(document).ready(function(){
                 // if logged in user and commenting user same
                 if(data.value){
                     if(data.fname_empty){
-                        $(data.id).prepend("<li class='list-group-item p-0'><div class='d-flex flex-row'><a class='small' href='"+url_val+"'>"+data.user+"</a><span class='small span_dimen pr-1'>"+data.comments+"</span> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></li>")
+                        $(data.id).prepend("<li class='list-group-item p-0' id='"+data.oid+"'><div class='d-flex flex-row'><a class='small pr-1' href='"+url_val+"'>"+data.user+"</a><span class='small span_dimen pr-1'>"+data.comments+"</span> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></li>")
                         // console.log("<li class='list-group-item p-0'><small><a href="+url_val+">"+data.user+"</a>"+data.comments+"</small></li>")
                     }
                     // Updating the Comment Username as per the first_name saved in DB
                     else{
                         // console.log('first else')
-                        $(data.id).prepend("<li class='list-group-item p-0'><div class='d-flex flex-row'><a class='small' href='"+url_val+"'>"+data.user+"</a><span class='small span_dimen pr-1'>"+data.comments+"</span> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></li>")
+                        $(data.id).prepend("<li class='list-group-item p-0' id='"+data.oid+"'><div class='d-flex flex-row'><a class='small pr-1' href='"+url_val+"'>"+data.user+"</a><span class='small span_dimen pr-1'>"+data.comments+"</span> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></li>")
                     }
                 }
                 // if the logged in user and commenting user are different
                 else{
                     // console.log("in else")
                     if(data.fname_empty){
-                        $(data.id).prepend("<li class='list-group-item p-0'><div class='d-flex flex-row'><a class='small' href='"+url_val+"'>"+data.user+"</a><span class='small span_dimen pr-1'>"+data.comments+"</span> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></li>")
+                        $(data.id).prepend("<li class='list-group-item p-0' id='"+data.oid+"'><div class='d-flex flex-row'><a class='small pr-1' href='"+url_val+"'>"+data.user+"</a><span class='small span_dimen pr-1'>"+data.comments+"</span> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></li>")
                     }
                     // Updating the Comment Username as per the first_name saved in DB
                     else{
                         // console.log('second else')
-                        $(data.id).prepend("<li class='list-group-item p-0'><div class='d-flex flex-row'><a class='small' href='"+url_val+"'>"+data.user+"</a><span class='small span_dimen pr-1'>"+data.comments+"</span> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></li>")
+                        $(data.id).prepend("<li class='list-group-item p-0' id='"+data.oid+"'><div class='d-flex flex-row'><a class='small pr-1' href='"+url_val+"'>"+data.user+"</a><span class='small span_dimen pr-1'>"+data.comments+"</span> <input class='edit_button' src='/static/components/edit_comment.png/' type='image'></div></li>")
                     }
                 }
             },
@@ -151,7 +151,7 @@ $(document).ready(function(){
     $('ul').on('click', '.edit_button', function(){
         var comment_value = $(this).parent().children('span').text();
 
-        $(this).parents('li').find('span').replaceWith("<form class='comm-update-form' class='p-1' method='post'><input name='comments' class='comment_ip' type='text'><input class='correct_img' type='image' src='/static/components/Correct.png'><input type='image' class='cancel_img' src='/static/components/Cancel.png' </form>");
+        $(this).parents('li').find('span').replaceWith("<form class='comm-update-form' class='p-1' method='post'><input name='comments' class='comment_ip' type='text'><input class='correct_img' type='image' src='/static/components/Correct.png'><input type='image' class='cancel_img' src='/static/components/Cancel.png'></form>");
         $('.comment_ip').css({
             'width':'230px',
             'height': '50px',
@@ -208,7 +208,8 @@ $(document).ready(function(){
 $(document).ready(function(){
     $('.post_edit_parent').on('click','.post_edit', function(event){
         event.preventDefault();
-        // console.log($(this).parents().children('.replaced_editor').find('.post_info').text());
+        // console.log($(this).parents('div .row'));
+        // .children('.replaced_editor').find('.post_info').text());
         var post_info_get = $(this).parents('div .row').find('.post_info').size();
         var img_url_get = $(this).parents('div .row').find('.post_img_url').size();
         // console.log($(this).parents('div .row').find('.post_img_url')); 
@@ -241,7 +242,11 @@ $(document).ready(function(){
         var replacer_editor = $(this).parents('div .row').find('.replacer_editor').html();
         
         $(this).parents('div .row').find('.replacer_editor').load('/static/fe.html #p_ed_dat_r', function(){
-            // console.log(this);
+            // console.log($(this).parents('.dyn_edit_cont').find('.input_post_file_iedit').attr('id',feed_id+'_img_id'));
+            $(this).parents('.dyn_edit_cont').find('.input_post_file_iedit').attr('id',feed_id+'_img_id');
+            $(this).parents('.dyn_edit_cont').find('label[for="id_for_image"]').attr('for',feed_id+'_img_id');
+            $(this).parents('.dyn_edit_cont').find('.input_post_file_vedit').attr('id',feed_id+'_vdo_id');
+            $(this).parents('.dyn_edit_cont').find('label[for="id_for_video"]').attr('for',feed_id+'_vdo_id');
             if(img_url_get == 0){
             $(this).parents('div .row').find('.img_cont').hide();
             } else{
@@ -260,20 +265,11 @@ $(document).ready(function(){
             }
 
         });
-         $('.replacer_editor').on('change','.input_post_file_iedit',function(){
-            console.log($(this));
-            if(this.files && this.files[0]){
-                // console.log($(this).parents('div .row').find('.img_cont'))
-                $(this).parents('.re_post').find('.img_cont').attr('src',URL.createObjectURL(this.files[0])).show();
-                $(this).parents('.re_post').find('.img_count').onload = function(){
-                URL.revokeObjectURL(this.src);
-                }
-            }
 
-         });
     });
     // Cancelling the edit action of dynamic edit
-    $('.replacer_editor').on('click','#cancel_btn', function(){
+    $('.dyn_edit_cont').on('click','#pe_cancel_btn', function(){
+        // console.log(this);
         var feed_id = $(this).parents('.replacer_editor').attr('id');
 
         $.ajax({
@@ -288,16 +284,22 @@ $(document).ready(function(){
     });
 
     // Submit or updating dynamically the post data
-    $('.replacer_editor').on('submit', '.re_post', function(event){
+    $('.dyn_edit_cont').on('submit', '.re_post', function(event){
         event.preventDefault();
-        var form = $(this)
+        var form = new FormData($(this)[0]);
         var feed_id = $(this).parents('.replacer_editor').attr('id');
+        // console.log($(this).attr('method'));
+        // console.log($(this)[0]); 
+        // console.log(form);
+        // console.log($(this).parents('.replacer_editor').find('.input_post_file_iedit'));
 
         $.ajax({
             url:'edit/'+feed_id+'/',
             context:this,
-            type: form.attr('method'),
-            data: form.serialize(),
+            type: $(this).attr('method'),
+            data: form,
+            contentType: false,
+            processData: false,
             success: sucAndCan,
         });
     });
@@ -337,7 +339,150 @@ $(document).ready(function(){
    
 }); //document.ready closure
 
+// Preview of the Images and Video files during the post edit
+$(function(){
+     $('.dyn_edit_cont').on('change','.input_post_file_iedit, .input_post_file_vedit',function(){
+        // console.log($(this).parents('.replaced_editor').find('.img_cont'));
+        if(this.files && this.files[0]){
+            // console.log(this);
+            if(this.files[0].type.startsWith('image/')){
+                // console.log(this.files[0].type);
+                // console.log($(this).parents('div .row').find('.img_cont'))
+                $(this).parents('.dyn_edit_cont').find('.img_cont').attr('src', URL.createObjectURL(this.files[0])).show();
+                $(this).parents('.dyn_edit_cont').find('.img_cont').onload = function(){
+                    URL.revokeObjectURL(this.src);
+                }
+            }
+            else if(this.files[0].type.startsWith('video/')){
+                // console.log(this.files[0].type);
+                // console.log($(this).parents('.dyn_edit_cont').find('video'));
+                $(this).parents('.dyn_edit_cont').find('video').attr('src', URL.createObjectURL(this.files[0])).show();
+                $(this).parents('.dyn_edit_cont').find('video').onload = function(){
+                    URL.revokeObjectURL(this.src);
+                }
+            }
+            else{
+                console.log(this.files[0].type);
+                 alert('Please select the proper image file');
+            }
+            
+        }
 
-// $(function(){
+    });
 
-// });
+});
+
+$(function(){
+
+    function readURL() {
+        //  rehide the image and remove its current "src",
+        //  this way if the new image doesn't load,
+        //  then the image element is "gone" for now
+        $('#fi_disp').attr('src', '').hide();
+        if (this.files && this.files[0]) {
+
+            if(this.files[0].type.startsWith('image/')){
+                $('#fi_disp').attr('src', URL.createObjectURL(this.files[0]));
+                $('#fi_disp').onload = function(){
+                    URL.revokeObjectURL(this.src);
+                }
+            }else if(this.files[0].type.startsWith('video/')){
+                // $('#id_video').attr()
+                var video = $('#vdo_post_prvw');
+                // console.log($('#vdo_post_prvw source').attr('src'));
+                // console.log($('video'))
+               
+
+                $('#vdo_post_prvw source').attr('src', URL.createObjectURL(this.files[0]));
+                 $(video).css({
+                    'width':'400px',
+                    'height':'250px',
+                    'display':'inline',
+                });
+                console.log(this.src)
+                // , $('#vdo_post_prvw source').attr('src')); 
+                $('#vdo_post_prvw')[0].load();
+                console.log(this.src)
+                // , $('#vdo_post_prvw source').attr('src'));
+                // $('#vdo_post_prvw').onload = function(){
+                //     // $('#vdo_post_prvw').get(0).play();
+                // console.log(this.src, $('#vdo_post_prvw source').attr('src'));
+                // URL.revokeObjectURL(this.src);
+                // console.log(this.src, $('#vdo_post_prvw source').attr('src'));
+                // }
+            }
+
+            // var reader = new FileReader();
+            // $(reader).load(function(e) {
+            //  $('#fi_disp')
+            //      //  first we set the attribute of "src" thus changing the image link
+            //      .attr('src', e.target.result)   //  this will now call the load event on the image
+            // });
+            // reader.readAsDataURL(this.files[0]);
+
+        }
+    }
+
+    //  below makes use of jQuery chaining. This means the same element is returned after each method, so we don't need to call it again
+    $('#fi_disp')
+        //  here we first set a "load" event for the image that will cause it change it's height to a set variable
+        //      and make it "show" when finished loading
+        .load(function(e) {
+            // e.preventdefault();
+            //  $(this) is the jQuery OBJECT of this which is the element we've called on this load method
+            $(this)
+                //  note how easy adding css is, just create an object of the css you want to change or a key/value pair of STRINGS
+                .css('height', '400px') //  or .css({ height: '200px' })
+                //  now for the next "method" in the chain, we show the image when loaded
+                .show();    //  just that simple
+            $(this).css('width', '400px').show();
+        })
+        //  with the load event set, we now hide the image as it has nothing in it to start with
+        .hide();    //  done
+
+$("#id_image").change(readURL);
+$('#id_video').change(readURL);
+
+});
+
+// Image and Video slider display
+$(function(){
+    // On Next Image/Video click
+    $('.post_edit_parent').on('click', '.next', function(){
+        console.log('you are hitting me');
+        var currentElement = $(this).parents('.outer_container').find('.active');
+
+        if($(currentElement).get(0).nodeName == 'VIDEO'){
+            $(currentElement)[0].currentTime = 0;
+            $(currentElement)[0].pause();
+        }
+        var nextElement = currentElement.next();
+        if(nextElement.length){
+            if($(nextElement).get(0).nodeName == 'VIDEO'){
+
+                $(nextElement).get(0).play();
+            }
+            // console.log('inside clicked')
+            currentElement.removeClass('active').css('z-index', -10);
+            nextElement.addClass('active').css('z-index',10);
+            // console.log(nextElement);
+        }    
+    });
+    // On Previous image/video display
+    $('.post_edit_parent').on('click','.prev', function(){
+        console.log('you are hitting me');
+        var currentElement = $(this).parents('.outer_container').find('.active');
+        if($(currentElement)[0].nodeName == 'VIDEO'){
+            console.log(currentElement[0].currentTime);
+            $(currentElement)[0].currentTime = 0;
+            $(currentElement)[0].pause();
+        }
+        var prevElement = currentElement.prev();
+
+        if(prevElement.length){
+            currentElement.removeClass('active').css('z-index', -10);
+            prevElement.addClass('active').css('z-index',10);
+        }
+
+    })
+});

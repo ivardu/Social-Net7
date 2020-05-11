@@ -26,8 +26,10 @@ class Feed(models.Model):
 
 	def save(self, *args, **kwargs):
 		super().save()
+		print(self.image)
 
-		if self.image != '' :
+		if self.image:
+			print("Why I'm true")
 			img = Image.open(self.image.path)
 			if img.height < 400 or img.width < 400:
 				resize = (400, 400)

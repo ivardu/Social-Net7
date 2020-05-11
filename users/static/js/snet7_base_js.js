@@ -293,14 +293,17 @@ $(document).ready(function(){
 $('#profile_user_data_form').on('submit', function(e){
 	e.preventDefault();
 	var form = $('#profile_user_data_form');
-	console.log(form.attr('data-url'));
-	console.log(form.serialize());
+	// console.log(form.attr('data-url'));
+	// console.log(form.serialize());
 	$.ajax({
 		url: form.attr('data-url'),
 		type: form.attr('method'),
 		data: form.serialize(),
-		success: function(){
+		success: function(data){
 			$('#prof_sub_btn').blur();
+			// console.log('what..?')
+			// console.log($('#title').text());
+			$('#title').text(data.title)
 		}
 
 		});

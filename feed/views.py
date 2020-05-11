@@ -35,15 +35,14 @@ def feed(request):
 
 	if request.method == 'POST':
 		feed_form = FeedForm(request.POST, request.FILES)
+		# Avoiding the null entry for all the files of the post
 		request_data = (request.FILES.get('image',False) or request.FILES.get('video', False) or request.POST.get('post_info',False))
-		# print(request.FILES.get('image',False) or request.FILES.get('video', False) or request.POST.get('post_info',False))
-		# print(request.POST.get('video', False ), request_data)
+
 		if feed_form.is_valid() and request_data != False:
-			# if len(feed_form.cleaned_data['post_info']) > 0:
 			feed_obj = feed_form.save(commit=False)
 			feed_obj.user = request.user
+			# print(feed_obj.image!='', feed_obj.image)
 			feed_obj.save()
-			# print('success')
 			return HttpResponseRedirect(reverse('feed:feed'))
 		else:
 			print(feed_form.errors)
@@ -114,6 +113,7 @@ def comments(request, id):
 				'fname_empty':comment_obj.user.fname_empty(),
 				'url_val': return_value(value),
 				'id':'#Feed'+str(comment_obj.feed.id),
+				'oid':comment_obj.id,
 			}
 			# item.user.truncate|title
 			# return HttpResponseRedirect(reverse('feed:feed'))
