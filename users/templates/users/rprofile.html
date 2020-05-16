@@ -40,7 +40,12 @@
 						{% csrf_token %}
 						<input type="hidden" name="friends" value="Yes">
 						{% if freq_sent.friends == 'Yes' %}
-							<span class="btn btn-info">Friends</span>
+							<div class="dropup">
+								<span class="btn btn-info dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Friends</span>
+								<div class="dropdown-menu frnd_menu">
+									<a class="dropdown-item" href="{% url 'cancl_friend' user.id %}">Un Friend</a>
+								</div>
+							</div>
 						{% elif freq_sent.freq == 'Yes' %}
 							<button type="submit" class="btn btn-primary">Accept Request</button>
 						{% endif %}
@@ -51,7 +56,12 @@
 						{% csrf_token %}
 						<input type="hidden" name="freq" value="Yes">
 						{% if freq_sent.friends == 'Yes' %}
-							<span class="btn btn-info">Friends</span>
+							<div class="dropup">
+								<span class="btn btn-info dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Friends</span>
+								<div class="dropdown-menu frnd_menu">
+									<a class="dropdown-item" href="{% url 'cancl_friend' user.id %}">Un Friend</a>
+								</div>
+							</div>
 						{% elif freq_sent.freq == 'Yes' %}
 							<span class="btn btn-primary">Request Sent</span>
 						{% else %}

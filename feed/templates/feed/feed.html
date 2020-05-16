@@ -42,7 +42,7 @@
 </div>
 <div class="post_edit_parent container col-md-5 ">
 	{% for item in page_obj %}
-		{% if item.user.id in request.user.frn_list_ids or item.user == request.user %}
+		<!-- {% if item.user.id in request.user.frn_list_ids or item.user == request.user %} -->
 		<!-- <h1>{{item.id}}</h1>  -->
 		<div class="row container shadow p-2 mt-2 rounded mx-auto ">
 			<div class="col-md-2">
@@ -87,22 +87,33 @@
 						<div class="row">
 							<div class="outer_container">
 								<!-- <div class="prev"><img class="prev_img" src="/static/components/prev.png"></div> -->
+								{% if item.image and item.video %}
+								<div class="prev w3-left w3-text-white w3-hover-text-khaki ">&#10094;</div>
+								{% endif %}
+								{% if item.image or item.video %}
 								<div class="slider">
 									{% if item.image %}
 										<img class="post_img_url active" src="{{item.image.url}}" width="400" height="400">
+										{% if item.video %}
+										<video class="vdo_pad" width="400" height="400" controls>
+											<source src="{{item.video.url}}" type="video/mp4">
+										</video>
+										{% endif %}
 									{% endif %}
-									{% if item.video %}
-									<video class="vdo_pad" width="400" height="400" controls>
+									{% if not item.image and item.video %}
+									<video class="vdo_pad active" width="400" height="400" controls>
 										<source src="{{item.video.url}}" type="video/mp4">
 									</video>
 									{% endif %}
 								</div>
-								<div class="w3-center w3-container w3-section w3-large w3-text-white w3-display-bottommiddle" style="width:100%">
-								    <div class="w3-left w3-hover-text-khaki prev">&#10094;</div>
-								    <div class="w3-right w3-hover-text-khaki next">&#10095;</div>
-								    <span class="w3-badge demo w3-border w3-transparent w3-hover-white"></span>
+								{% endif %}
+								{% if item.image and item.video %}
+								<div class="next w3-right w3-text-white w3-hover-text-khaki ">&#10095;</div>
+								<div class="w3-center w3-container w3-section w3-large w3-text-white w3-display-bottommiddle" style="width:100%"> 
+								    <span class="w3-badge demo w3-border w3-transparent w3-hover-white w3-white"></span>
 								    <span class="w3-badge demo w3-border w3-transparent w3-hover-white"></span>
 								  </div>
+								{% endif %}
 							</div>
 						</div>
 						{% endif %}
@@ -122,7 +133,7 @@
 						<div class="form-group form-inline mb-0">
 							{% csrf_token %}
 							{{comment_form}}
-							<input id='comment_btn' class="btn btn-sm btn-info" type="submit" name="submit" value="comment">
+							<input class="comment_btn btn btn-sm btn-info" type="submit" name="submit" value="comment">
 						</div>
 					</form>
 				</div>
@@ -149,11 +160,41 @@
 								{% else %}
 									{% if item.user.fname_empty %}
 									<div class="d-flex flex-row">
-										<a class="small pr-1" href="{% url 'rprofile' item.user.id %}">{{item.user.truncate|title}}</a> <span class="span_dimen small pr-1"> {{item.comments}}</span>
+										<div>
+											<a class="small pr-1" href="{% url 'rprofile' item.user.id %}">{{item.user.truncate|title}}</a> 
+										</div>
+										<div class="d-flex flex-column">
+											<div class="d-flex flex-row">
+												<span class="span_dimen small pr-1"> {{item.comments}}</span>
+											</div>
+											<div class="d-flex flex-row">
+												<div class="comm_rply_div">
+													<span class="btn btn-link comment_reply">Reply</span>
+												</div>
+												<div class="comm_lik_div">
+													<span class="btn btn-link comment_likes">Likes</span>
+												</div>
+											</div>
+										</div>
 									</div>
 									{% else %}
 									<div class="d-flex flex-row">
-										<a class="small pr-1" href="{% url 'rprofile' item.user.id %}">{{item.user.first_name|title}}</a> <span class="span_dimen small pr-1">{{item.comments}}</span>
+										<div>
+											<a class="small pr-1" href="{% url 'rprofile' item.user.id %}">{{item.user.first_name|title}}</a>
+										</div>
+										<div class="d-flex flex-column">
+											<div class="d-flex flex-row">
+												<span class="span_dimen small pr-1"> {{item.comments}}</span>
+											</div>
+											<div class="d-flex flex-row">
+												<div class="comm_rply_div">
+												<span class="comment-reply">Reply</span>
+												</div>
+												<div class="comm_lik_div">
+												<span class="comment_likes">Likes</span>
+												</div>
+											</div>
+										</div>
 									</div>
 									{% endif %}
 								{% endif %}

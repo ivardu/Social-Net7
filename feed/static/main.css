@@ -7,7 +7,16 @@
  .dropdown-menu>a:hover{
  	background-image: none;
  	background-color: #ebe8e4;
-
+ }
+ .dropdown-menu{
+ 	width: 100%;
+ 	/*min-width: 0;*/
+ }.frnd_menu{
+ 	min-width: 0;
+ }
+ .dropdown-item{
+ 	z-index: 1000;
+ 	padding: 0px 10px;
  }
 
  .feed-upload>input, .input_post_file_iedit, .input_post_file_vedit{
@@ -179,7 +188,7 @@ div#profile-image-container:hover div#profile_overlay{
 }
 .profile-user-form{
 	position: absolute;
-	bottom: -40px;
+	bottom: -38px;
 	z-index: 130;
 	opacity: 1.0;
 	min-width: 57em;
@@ -304,6 +313,7 @@ div#profile-image-container:hover div#profile_overlay{
 	display: block;
 	width: 330px;
 	word-wrap: break-word;
+	padding-top: 3px;
 }
 
 /*#edit_btn_img::after{
@@ -320,29 +330,9 @@ div#profile-image-container:hover div#profile_overlay{
 	vertical-align: middle;
 }
 
-/*.prev{
-	cursor: pointer;
-	top: 150px;
-    position: absolute;
-    z-index: 100;
-     background-color: #000; 
-    float: left;
-}
-.next{
-	cursor: pointer;
-	top: 150px;
-    float: left;
-    right: 0px;
-    background-color: #000; 
-    position: absolute;
-    z-index: 100;
-}*/
-.prev_img, .next_img{
-	widows: 50px;
-	height: 50px;
-}
+
 .slider img,video{
-	position: relative;
+	/*position: relative;*/
 	display: none;
 }
 .slider > .active{
@@ -356,16 +346,64 @@ div#profile-image-container:hover div#profile_overlay{
 }
 .w3-left{float:left!important}
 .w3-right{float:right!important}
-.w3-hover-text-khaki:hover{color:#b4aa50!important; cursor: pointer;}
+.w3-hover-text-khaki:hover{color:#000!important; cursor: pointer;}
 .w3-badge{background-color:#000;color:#fff;display:inline-block;padding-left:8px;padding-right:8px;text-align:center}
 .w3-badge{border-radius:50%}
 .w3-border{border:1px solid #ccc!important}
 .w3-transparent,.w3-hover-none:hover{background-color:transparent!important}
-.w3-hover-white:hover{color:#000!important;background-color:#fff!important}
+.w3-white,.w3-hover-white:hover{color:#000!important;background-color:#e8e3dc!important}
 .w3-center{text-align:center!important}
 .w3-center .w3-bar{display:inline-block;width:auto}
 .w3-container{padding:0.01em 16px}
+.w3-badge {
+    height: 13px;
+    width: 13px;
+    padding: 0;
+}
+/*.w3-white*/
 /*.w3-section{margin-top:16px!important;margin-bottom:16px!important}*/
 .w3-large{font-size:15px!important}
-.w3-text-white{color:#000!important}
+.w3-text-white{color:#fff!important}
 .w3-display-bottommiddle{position:relative;left:50%;bottom:0;transform:translate(-50%,0%);-ms-transform:translate(-50%,0%)}
+
+.prev{
+	cursor: pointer;
+	top: 150px;
+    position: absolute;
+    z-index: 100;
+    /*background-color: #fff; */
+    /*display: none;*/
+    float: left;
+    font-size: 40px;
+    width: 25px;
+}
+.next{
+	cursor: pointer;
+	top: 150px;
+    right: 0px;
+    /*float: right!important;*/
+    position: absolute;
+    z-index: 100;
+    font-size: 40px;
+    width: 25px;
+}
+.prev:hover, .next:hover{
+	display: inline;
+	background-color: #ebeef2;
+	opacity: 0.5;
+	z-index: 1;
+	/*width: 30px;*/
+}
+.prev_img, .next_img{
+	widows: 50px;
+	height: 50px;
+}
+
+.comment_likes, .comment_reply{
+	font-size: 11px;
+	padding: 2px;
+}
+.comm_lik_div, .comm_rply_div{
+	margin: 0px;
+}
+

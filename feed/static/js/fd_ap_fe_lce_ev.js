@@ -84,13 +84,18 @@ $(document).ready(function(){
         var this_ = $("span[class='likes_value small']", this);
         $.ajax({
             type:$(this).attr('method'),
+            context:this,
             url : $(this).attr('likes-url'),
             data : $(this).serialize(),
             success: function(data){
                 var count;
                 // console.log(data.count)
                 count = data.count
+                if(count==0){
+                    $(this).find('.likes_value').empty()
+                }else{
                 updateText(this_, count, "Likes")
+                }
             },
             error: function(data) {
                 alert('something wrong')
@@ -107,12 +112,13 @@ $(document).ready(function(){
         event.preventDefault();
         $.ajax({
             type:$(this).attr('method'),
+            context:this,
             url: $(this).attr('comment-url'),
             data: $(this).serialize(),
             success: function(data){
                 var url_val;
-                url_val = data.url_val
-                $('#comment_btn').blur();
+                url_val = data.url_val;
+                $(this).find('.comment_btn').blur();
                 $(this_c).val("");
                 // if logged in user and commenting user same
                 if(data.value){
@@ -448,10 +454,12 @@ $('#id_video').change(readURL);
 // Image and Video slider display
 $(function(){
     // On Next Image/Video click
+    // $()
     $('.post_edit_parent').on('click', '.next', function(){
-        console.log('you are hitting me');
+        
         var currentElement = $(this).parents('.outer_container').find('.active');
-
+        var demo = $(this).parents('.outer_container').find('.demo');
+        // console.log(demo);
         if($(currentElement).get(0).nodeName == 'VIDEO'){
             $(currentElement)[0].currentTime = 0;
             $(currentElement)[0].pause();
@@ -459,21 +467,25 @@ $(function(){
         var nextElement = currentElement.next();
         if(nextElement.length){
             if($(nextElement).get(0).nodeName == 'VIDEO'){
-
                 $(nextElement).get(0).play();
             }
             // console.log('inside clicked')
             currentElement.removeClass('active').css('z-index', -10);
             nextElement.addClass('active').css('z-index',10);
-            // console.log(nextElement);
+            // console.log($(demo).next().get(0));
+            demo.removeClass('w3-white');
+            $(demo).next().addClass('w3-white');
+            // console.log($(this).parents('.outer_container').find('.demo'))
         }    
     });
     // On Previous image/video display
     $('.post_edit_parent').on('click','.prev', function(){
-        console.log('you are hitting me');
+        // console.log('you are hitting me');
         var currentElement = $(this).parents('.outer_container').find('.active');
+        var demo = $(this).parents('.outer_container').find('.demo');
+        // console.log('here', currentElement);
         if($(currentElement)[0].nodeName == 'VIDEO'){
-            console.log(currentElement[0].currentTime);
+            // console.log(currentElement[0].currentTime);
             $(currentElement)[0].currentTime = 0;
             $(currentElement)[0].pause();
         }
@@ -482,7 +494,36 @@ $(function(){
         if(prevElement.length){
             currentElement.removeClass('active').css('z-index', -10);
             prevElement.addClass('active').css('z-index',10);
+            demo.removeClass('w3-white');
+            demo.prev().addClass('w3-white');
         }
 
     })
 });
+
+// Handling the likes of the Comments
+$(function(){
+    $('.post_edit_parent').on('click','.comment_likes', function(event){
+        event.preventDefault();
+        var comment_id = $(this).parents('.list-group-item').attr('id');
+        console.log(comment_id);
+
+        $.ajax({
+            context:this,
+            url:'cl/'+comment_id+'/',
+            data: {'likes':1},
+            type:'post',
+            success:function(data){
+                console.log(this);
+                if(data.likes == 0){
+                    $(this).empty().text('Likes')
+                }else{
+                    $(this).empty().text('Likes').append('<span>'+data.likes+'</span>');
+                }
+                
+            }
+
+        })
+
+    })
+})

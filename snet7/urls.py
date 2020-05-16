@@ -20,8 +20,9 @@ from django.contrib.auth.views import (
     LoginView, LogoutView, PasswordResetConfirmView, 
     PasswordResetDoneView, PasswordResetCompleteView,
     )
-from django.conf import settings 
+from django.conf import settings
 from django.conf.urls.static import static
+# from django.conf.settings.INSTALLED_APPS 
 
 
 
@@ -35,6 +36,7 @@ urlpatterns = [
     path('rprofile/<int:id>/', user_views.rprofile, name='rprofile'),
     path('friends_req/<int:id>/', user_views.friends_req, name='friends_req'),
     path('friends_accp/<int:id>/',user_views.friends_accp, name='friends_accp'),
+    path('cancl_friend/<int:id>',user_views.cancl_friend, name='cancl_friend'),
     path('search/',user_views.search, name='search'),
     path('friends', user_views.friend_req_received, name='friend_req_received'),
     path('pchange/', user_views.PasswordChange.as_view(), name='pchange'),
@@ -52,4 +54,12 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+
+    #Adding debug toolbar to the project settings 
+    import debug_toolbar
+    urlpatterns += [path('__debug__/',include(debug_toolbar.urls)),]
+
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    # print(urlpatterns)
+

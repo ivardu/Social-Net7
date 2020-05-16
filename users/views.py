@@ -106,12 +106,13 @@ def rprofile(request, id):
 
 	return render(request, 'users/rprofile.html', locals())
 
+# Action after sending the friend request
 @login_required
 @require_POST
 def friends_req(request, id):
 	req_user = request.user
 	accp_user = SnetUser.objects.get(pk=id)
-	print('am I here..?')
+	# print('am I here..?')
 	try:	
 		avod_dupl_freq = Friends.objects.filter(freq_accp=accp_user).filter(freq='Yes').filter(freq_usr=req_user)
 	except e as Exception:
@@ -134,6 +135,8 @@ def friends_req(request, id):
 
 
 	# return HttpResponse('Fail')
+
+# Action after accepting the friend request
 @login_required
 @require_POST
 def friends_accp(request, id):
@@ -151,9 +154,53 @@ def friends_accp(request, id):
 		return HttpResponseRedirect(reverse('rprofile', args=(req_user.id,)))
 
 	# return HttpResponse('Fail')
+
+
+# Action after cancelling the friend request
+@login_required
+# @require_POST
+def cancl_friend(request, id):
+	cancelling_user = request.user
+	cancelled_user = SnetUser.objects.get(pk=id)
+	friend_obj = Friends.objects.filter(Q(freq_usr=cancelling_user)|Q(freq_accp=cancelling_user),Q(freq_usr=cancelled_user)|Q(freq_accp=cancelled_user))
+	print(friend_obj)
+	friend_obj[0].delete()
+	return HttpResponseRedirect(reverse('friend_req_received'))
+
+
+@login_required
+def friend_req_received(request):
+	# print(request.user.friend_request())
+	frend_req_list = request.user.friend_request()
+	friends = request.user.friends()
+	# print(frend_req_list, type(request.user.friend_request()))
+	return render(request, 'users/friends.html', locals())
+
+
+
+# Coverphoto handler
+@login_required
+def cover_photo(request):
+	user = request.user
+	# print(request.POST, request.FILES)
+	if request.method == 'POST':
+		form = CoverPhotoForm(request.POST, request.FILES, instance=user.usercover)
+		if form.is_valid():
+			form_obj = form.save(commit=False)
+			# form_obj.cover_photo
+			form_obj.user = user
+			form_obj.save()
+			# print('am I success')
+			# print(form_obj.cover_photo)
+		else:
+			print(form.errors)
+		return HttpResponseRedirect(reverse('profile'))
+
+
 @login_required
 def search(request):
 	result = request.POST.get('search')
+	# print(result)
 	no_result = 'No Results Found'
 	data = [{
 		'no_result':no_result,
@@ -216,35 +263,6 @@ def search(request):
 
 	return JsonResponse(data, safe=False)
 	# return render(request, 'users/search.html', locals())
-
-@login_required
-def friend_req_received(request):
-	# print(request.user.friend_request())
-	frend_req_list = request.user.friend_request()
-	friends = request.user.friends()
-	# print(frend_req_list, type(request.user.friend_request()))
-	return render(request, 'users/friends.html', locals())
-
-
-
-# Coverphoto handler
-@login_required
-def cover_photo(request):
-	user = request.user
-	print(request.POST, request.FILES)
-	if request.method == 'POST':
-		form = CoverPhotoForm(request.POST, request.FILES, instance=user.usercover)
-		if form.is_valid():
-			form_obj = form.save(commit=False)
-			# form_obj.cover_photo
-			form_obj.user = user
-			form_obj.save()
-			print('am I success')
-			print(form_obj.cover_photo)
-		else:
-			print(form.errors)
-		return HttpResponseRedirect(reverse('profile'))
-
 		
 
 

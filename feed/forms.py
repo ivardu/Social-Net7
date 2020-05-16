@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import FileInput
-from feed.models import Feed, Likes, Comments
+from feed.models import Feed, Likes, Comments, RelatedComments
 
 
 class FeedForm(forms.ModelForm):
@@ -26,6 +26,13 @@ class CommentsForm(forms.ModelForm):
 	class Meta:
 		model = Comments
 		fields = ['comments']
+
+
+class RelatedCommentPost(forms.ModelForm):
+	
+	class Meta:
+		model = RelatedComments
+		fields = ['related_comment', 'parent_comment']
 
 
 # class FeedPostEdit(forms.ModelForm):

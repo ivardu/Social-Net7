@@ -26,10 +26,10 @@ class Feed(models.Model):
 
 	def save(self, *args, **kwargs):
 		super().save()
-		print(self.image)
+		# print(self.image)
 
 		if self.image:
-			print("Why I'm true")
+			# print("Why I'm true")
 			img = Image.open(self.image.path)
 			if img.height < 400 or img.width < 400:
 				resize = (400, 400)
@@ -37,13 +37,13 @@ class Feed(models.Model):
 				image.save(self.image.path)
 
 	def likes_count(self):
-		return self.likes_set.filter(likes=1).count()
+		return self.likes_set.count()
 
 	def get_absolute_url(self):
 		return reverse('feed:feed')
 
 	def __str__(self):
-		return self.post_info
+		return self.user.truncate()+'post'
 
 	def feed_post_time(self):
 
@@ -89,6 +89,9 @@ class Feed(models.Model):
 			return f'few moments ago'
 
 
+	# def 
+
+
 
 
 
@@ -118,5 +121,20 @@ class Comments(models.Model):
 	class Meta:
 		ordering = ['-date']
 
+
+class RelatedComments(models.Model):
+	related_comment = models.CharField(max_length=255)
+	parent_comment = models.ForeignKey(Comments, on_delete=models.CASCADE)
+	user = models.ForeignKey(SnetUser, on_delete=models.CASCADE)
+	date = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		ordering = ['date']
+
+
+class CommentLikes(models.Model):
+	likes = models.IntegerField(default=0)
+	like_parent = models.ForeignKey(Comments, on_delete=models.CASCADE)
+	user = models.ForeignKey(SnetUser, on_delete=models.CASCADE)
 
 

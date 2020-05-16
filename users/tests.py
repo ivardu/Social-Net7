@@ -19,7 +19,7 @@ from users.signals import create_profile
 
 from feed.models import Feed
 
-import os
+import os, json
 
 User = get_user_model()
 
@@ -296,10 +296,11 @@ class UserProfileTest(TestCase):
 
 	def test_profile_form_invalid(self):
 		form = ProfileUpdateForm(data={})
-		# Form gets valid as we are passing empty dict nothing bound form 
-		self.assertTrue(form.is_valid())
+		# Form gets valid as we are passing empty dict nothing bound form << -- Need to check on this
+		self.assertFalse(form.is_valid())
 		# But saving data to the model will throw and Integrity error as existing data should need to have user details too.
 		with self.assertRaises(IntegrityError):
+			form.is_valid()
 			form.save()
 		
 		
@@ -427,17 +428,20 @@ class SearchTest(ProfileUsersReadFormTest):
 		data = {'search':self.new_user.truncate()}
 		self.search_resp = self.client.post(reverse('search'), data=data)
 		self.feed = self.client.get(reverse('feed:feed'))
+		# print(self.search_resp.content)
 		
 		# Testing the domain page/home page url redirect post authentication
 		self.home_page = self.client.get(reverse('register'), follow=True)
 
 	def test_search_url(self):
+		dit = json.loads(self.search_resp.content)[0]
+		# print(json.loads(self.search_resp.content))
 		self.assertEqual(self.search_resp.status_code, 200)
-		self.assertIsInstance(self.search_resp.context['user'], SnetUser)
+		self.assertEqual(dit['user'], self.new_user.truncate().capitalize())
 		self.assertContains(self.home_page, 'LogOut')
 		self.assertEqual(self.home_page.status_code, 200)
 		# print(self.search_resp.content)
-		self.assertContains(self.search_resp, 'Results found')
+		self.assertContains(self.search_resp, dit['user'])
 
 	def test_feed_url(self):
 		# self.assertContains(self.feed, 'friends')
@@ -536,7 +540,7 @@ class CoverPhotoTest(TestCase):
 		self.assertTrue(form.is_valid)
 
 	def test_cover_url_view(self):
-		self.url = self.client.post(reverse('cover_photo', args=(self.user.id,)))
+		self.url = self.client.post(reverse('cover_pic', args=(self.user.id,)))
 		self.assertTrue(self.url.status_code, 200)
 
 

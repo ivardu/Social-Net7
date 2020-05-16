@@ -123,9 +123,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-        os.path.join(BASE_DIR, 'static'),
-    )
+# STATICFILES_DIRS = (
+#         os.path.join(BASE_DIR, 'static'),
+#     )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -141,3 +141,21 @@ LOGIN_URL = '/login/'
 
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 1025
+
+
+if DEBUG:
+    INTERNAL_IPS = [
+    # ...
+    '127.0.0.1',
+    # ...
+    ]
+    MIDDLEWARE += [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',]
+
+    INSTALLED_APPS +=[
+        'debug_toolbar',
+    ]
+
+
+
+

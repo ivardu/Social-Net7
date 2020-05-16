@@ -11,5 +11,8 @@ urlpatterns = [
 	path('myposts/<int:pk>/', views.MyPostList.as_view(), name='myposts'),
 	path('edit/<int:pk>/',views.FeedEditView.as_view(),name='feed_edit'),
 	path('del/<int:pk>/',views.FeedDeleteView.as_view(), name='feed_del'),
+	path('rc/<int:id>/', views.related_comments, name='related_comment'),
+	path('cl/<int:id>/',views.comment_likes, name='comment_likes'),
+
 ]
 

@@ -5,10 +5,11 @@ from django.utils.translation import ugettext, ugettext_lazy as _, ugettext_noop
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 
-from feed.forms import FeedForm, LikesForm, CommentsForm
+from feed.forms import FeedForm, LikesForm, CommentsForm, RelatedCommentPost
 # , FeedPostEdit
-from feed.models import Feed, Likes, Comments
+from feed.models import Feed, Likes, Comments, CommentLikes
 from users.models import SnetUser
 
 from django.views.generic.edit import FormView, UpdateView, DeleteView
@@ -18,7 +19,8 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 @login_required
 def feed(request):
-	feed = Feed.objects.all()
+	luser = request.user
+	feed =  Feed.objects.filter(Q(Q(user__friends__freq_usr=luser)|Q(user__friends__freq_accp=luser), user__friends__friends='Yes')|Q(user=luser)).distinct()
 	feed_form = FeedForm()
 	comment_form = CommentsForm()
 	page = request.GET.get('page', 1)
@@ -35,14 +37,15 @@ def feed(request):
 
 	if request.method == 'POST':
 		feed_form = FeedForm(request.POST, request.FILES)
-		# Avoiding the null entry for all the files of the post
 		request_data = (request.FILES.get('image',False) or request.FILES.get('video', False) or request.POST.get('post_info',False))
-
+		# print(request.FILES.get('image',False) or request.FILES.get('video', False) or request.POST.get('post_info',False))
+		# print(request.POST.get('video', False ), request_data)
 		if feed_form.is_valid() and request_data != False:
+			# if len(feed_form.cleaned_data['post_info']) > 0:
 			feed_obj = feed_form.save(commit=False)
 			feed_obj.user = request.user
-			# print(feed_obj.image!='', feed_obj.image)
 			feed_obj.save()
+			# print('success')
 			return HttpResponseRedirect(reverse('feed:feed'))
 		else:
 			print(feed_form.errors)
@@ -113,7 +116,6 @@ def comments(request, id):
 				'fname_empty':comment_obj.user.fname_empty(),
 				'url_val': return_value(value),
 				'id':'#Feed'+str(comment_obj.feed.id),
-				'oid':comment_obj.id,
 			}
 			# item.user.truncate|title
 			# return HttpResponseRedirect(reverse('feed:feed'))
@@ -143,6 +145,54 @@ def comment_update(request, id):
 	# 		print(comment_update_form.errors)
 	# else:
 	# 	print(request.method, comment_instance)
+
+
+@login_required
+def related_comments(request, id):
+	try:
+		related_comment_parent_inst = Comments.objects.get(pk=id)
+	except:
+		related_comment_parent_inst = None
+
+	if request.method == 'POST' and related_comment_parent_inst:
+		related_comment_form = RelatedCommentPost(request.POST)
+		if related_comment_form.is_valid():
+			comment_obj = related_comment_form.save(commit=False)
+			comment_obj.parent_comment = related_comment_parent_inst
+			comment_obj.save()
+			data = {
+				'comments':comment_obj.related_comment
+			}
+			return JsonResponse(data)
+
+	else:
+		print('failing')
+
+@login_required
+def comment_likes(request, id):
+	try:
+		comment_obj = Comments.objects.get(pk=id)
+		current_value = CommentLikes.objects.filter(like_parent=comment_obj, user=request.user)
+		print(comment_obj, request.method, current_value)
+	except:
+		comment_obj = None
+		# print('here..!!')
+
+	if request.method == 'POST':
+		if comment_obj != None and current_value and current_value[0].likes == 1:
+			print('Am I in..!!')
+			current_value[0].delete()
+		else:
+			CommentLikes.objects.create(likes=1, user=request.user, like_parent=comment_obj)
+
+		data = {
+			'likes':comment_obj.commentlikes_set.count()
+		}
+	else:
+		print('failing')
+
+	return JsonResponse(data)
+
  
 @method_decorator(login_required, name='dispatch')
 class MyPostList(ListView):
