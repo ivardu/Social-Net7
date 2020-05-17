@@ -122,6 +122,12 @@ class Comments(models.Model):
 		ordering = ['-date']
 
 
+class CommentLikes(models.Model):
+	likes = models.IntegerField()
+	like_parent = models.ForeignKey(Comments, on_delete=models.CASCADE)
+	user = models.ForeignKey(SnetUser, on_delete=models.CASCADE)
+
+
 class RelatedComments(models.Model):
 	related_comment = models.CharField(max_length=255)
 	parent_comment = models.ForeignKey(Comments, on_delete=models.CASCADE)
@@ -132,9 +138,9 @@ class RelatedComments(models.Model):
 		ordering = ['date']
 
 
-class CommentLikes(models.Model):
-	likes = models.IntegerField(default=0)
-	like_parent = models.ForeignKey(Comments, on_delete=models.CASCADE)
-	user = models.ForeignKey(SnetUser, on_delete=models.CASCADE)
+class RelatedCommentsLikes(models.Model):
+	likes = models.IntegerField()
+	rc_like_parent = models.ForeignKey(RelatedComments, on_delete=models.CASCADE)
+	user = models.ForeignKey(SnetUser, on_delete=models.CASCADE) 
 
 

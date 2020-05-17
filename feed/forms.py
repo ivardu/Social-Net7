@@ -32,7 +32,7 @@ class RelatedCommentPost(forms.ModelForm):
 	
 	class Meta:
 		model = RelatedComments
-		fields = ['related_comment', 'parent_comment']
+		fields = ['related_comment']
 
 
 # class FeedPostEdit(forms.ModelForm):

@@ -287,10 +287,11 @@ div#profile-image-container:hover div#profile_overlay{
 	margin: 0px;
 }
 
-.edit_button{
-	width: 20px;
-	height: 15px;
+.edit_button, .c_edit_button{
+	width: 15px;
+	height: 10px;
 	outline: none;
+	margin-top: 8px
 	/*position: relative;*/
 }
 .heart{
@@ -304,16 +305,19 @@ div#profile-image-container:hover div#profile_overlay{
 	background-color: #F8F8F8;
 }
 
-.correct_img{
-	width: 30px,
-	height 30px
+.correct_img, .cancel_img{
+	width: 30px;
+	height: 30px;
+}
+
+.span_dimen, .c_span_dimen{
+	display: block;
+	word-wrap: break-word;
+	padding-top: 4px;
 }
 
 .span_dimen{
-	display: block;
-	width: 330px;
-	word-wrap: break-word;
-	padding-top: 3px;
+	/*width: 300px;*/
 }
 
 /*#edit_btn_img::after{
@@ -399,11 +403,18 @@ div#profile-image-container:hover div#profile_overlay{
 	height: 50px;
 }
 
-.comment_likes, .comment_reply{
-	font-size: 11px;
+.comment_likes, .comment_reply, .c_comment_likes, .ch_cc_reply{
+	font-size: 9px;
 	padding: 2px;
 }
 .comm_lik_div, .comm_rply_div{
 	margin: 0px;
+	padding: 0px;
+	line-height: 0;
 }
-
+.comm_lik_val{
+	font-size: 10px;
+}
+.comment_user{
+	/*min-width: 60px;*/
+}

@@ -9,7 +9,7 @@ from django.db.models import Q
 
 from feed.forms import FeedForm, LikesForm, CommentsForm, RelatedCommentPost
 # , FeedPostEdit
-from feed.models import Feed, Likes, Comments, CommentLikes
+from feed.models import Feed, Likes, Comments, CommentLikes, RelatedComments, RelatedCommentsLikes
 from users.models import SnetUser
 
 from django.views.generic.edit import FormView, UpdateView, DeleteView
@@ -91,9 +91,9 @@ def comments(request, id):
 	try:
 		feed = Feed.objects.get(id=id)
 	except Exception as e:
-		print(e)
+		feed = None
 	# print(feed)
-	if request.method == 'POST':
+	if request.method == 'POST' and feed:
 		comment_form = CommentsForm(request.POST)
 		if comment_form.is_valid():
 			comment_obj = comment_form.save(commit=False)
@@ -111,11 +111,12 @@ def comments(request, id):
 			data = {
 				'comments':comment_obj.comments,
 				'value' : value,
-				'user':comment_obj.user.truncate().capitalize(),
+				'user':comment_obj.user.truncate(),
 				'feed_id': comment_obj.feed.id,
 				'fname_empty':comment_obj.user.fname_empty(),
 				'url_val': return_value(value),
 				'id':'#Feed'+str(comment_obj.feed.id),
+				'oid':comment_obj.id
 			}
 			# item.user.truncate|title
 			# return HttpResponseRedirect(reverse('feed:feed'))
@@ -131,9 +132,9 @@ def comment_update(request, id):
 		comment_instance = Comments.objects.get(id=id)
 		# print(request.POST)
 	except Exception as e:
-		print(e)
+		comment_instance = None
 
-	if request.method == 'POST':
+	if request.method == 'POST' and comment_instance:
 		comment_update_form = CommentsForm(request.POST, instance=comment_instance)
 		if comment_update_form.is_valid():
 			obj = comment_update_form.save()
@@ -155,18 +156,47 @@ def related_comments(request, id):
 		related_comment_parent_inst = None
 
 	if request.method == 'POST' and related_comment_parent_inst:
+		print('Yes its a post..',related_comment_parent_inst, request.method)
 		related_comment_form = RelatedCommentPost(request.POST)
 		if related_comment_form.is_valid():
-			comment_obj = related_comment_form.save(commit=False)
-			comment_obj.parent_comment = related_comment_parent_inst
-			comment_obj.save()
+			print('form is valid')
+			rcomment_obj = related_comment_form.save(commit=False)
+			rcomment_obj.parent_comment = related_comment_parent_inst
+			rcomment_obj.user = request.user
+			rcomment_obj.save()
+
 			data = {
-				'comments':comment_obj.related_comment
+				'comments':rcomment_obj.related_comment,
+				'a_value':request.user.truncate(),
+				'id':rcomment_obj.id,
 			}
 			return JsonResponse(data)
+		else:
+			print(related_comment_form.errors)
 
 	else:
 		print('failing')
+
+
+@login_required
+def related_comments_update(request, id):
+	try:
+		rc_obj = RelatedComments.objects.get(pk=id)
+	except:
+		rc_obj = None
+	print(rc_obj)
+
+	if request.method == 'POST' and rc_obj:
+		rc_form = RelatedCommentPost(request.POST, instance=rc_obj)
+		if rc_form.is_valid():
+
+			rc_m_obj = rc_form.save()
+			uc_data = {
+				'rc' : rc_m_obj.related_comment
+			}
+			return JsonResponse(uc_data)
+		else:
+			print(rc_form.errors)
 
 @login_required
 def comment_likes(request, id):
@@ -187,6 +217,33 @@ def comment_likes(request, id):
 
 		data = {
 			'likes':comment_obj.commentlikes_set.count()
+		}
+	else:
+		print('failing')
+
+	return JsonResponse(data)
+
+
+@login_required
+def realted_comment_likes(request, id):
+	try:
+		rcomment_obj = RelatedComments.objects.get(pk=id)
+		print(rcomment_obj)
+		rcurrent_value = RelatedCommentsLikes.objects.filter(rc_like_parent=rcomment_obj, user=request.user)
+		print(rcomment_obj, request.method, rcurrent_value)
+	except:
+		rcomment_obj = None
+		# print('here..!!')
+
+	if request.method == 'POST':
+		if rcomment_obj != None and rcurrent_value and rcurrent_value[0].likes == 1:
+			print('Am I in..!!')
+			rcurrent_value[0].delete()
+		else:
+			RelatedCommentsLikes.objects.create(likes=1, user=request.user, rc_like_parent=rcomment_obj)
+
+		data = {
+			'likes':rcomment_obj.relatedcommentslikes_set.count()
 		}
 	else:
 		print('failing')
