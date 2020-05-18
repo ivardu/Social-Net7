@@ -21,7 +21,7 @@ class LikesForm(forms.ModelForm):
 		fields = ['likes']
 
 class CommentsForm(forms.ModelForm):
-	comments = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder':'your comment','class':'form-control-sm p-0'}))
+	comments = forms.CharField(label='', widget=forms.TextInput(attrs={'placeholder':'your comment','class':'form-control fc-class p-0'}))
 
 	class Meta:
 		model = Comments

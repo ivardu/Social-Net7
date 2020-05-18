@@ -15,8 +15,9 @@
  	min-width: 0;
  }
  .dropdown-item{
- 	z-index: 1000;
- 	padding: 0px 10px;
+ 	/*z-index: 1000;*/
+ 	padding: 0px 20px 0px 20px;
+
  }
 
  .feed-upload>input, .input_post_file_iedit, .input_post_file_vedit{
@@ -417,4 +418,31 @@ div#profile-image-container:hover div#profile_overlay{
 }
 .comment_user{
 	/*min-width: 60px;*/
+}
+
+.rcc_ip, .rc_ip{
+	/*border-radius: 0;*/
+}
+
+.fc-class{
+
+/*	    display: block;
+    width: 100%;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;*/
+    border: 1px solid #ced4da; 
+    border-radius: 0;
+}
+.comment_btn{
+	border-radius: 0;
+}
+
+.rpf-drop-padding{
+	padding: 0px 10px;
 }
