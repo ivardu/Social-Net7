@@ -14,12 +14,12 @@
  }.frnd_menu{
  	min-width: 0;
  }
- .dropdown-item{
- 	/*z-index: 1000;*/
+/* .dropdown-item{
+ 	z-index: 1000;
  	padding: 0px 20px 0px 20px;
 
  }
-
+*/
  .feed-upload>input, .input_post_file_iedit, .input_post_file_vedit{
  	display: none;
  }
@@ -263,7 +263,7 @@ div#profile-image-container:hover div#profile_overlay{
 #over-cover-img-disp-blc{
 	bottom: 250px;
 	right: 50px;
-	width: 120px;
+	width: 130px;
 	height: 35px;
 	z-index: 120;
 	position: absolute;
@@ -445,4 +445,27 @@ div#profile-image-container:hover div#profile_overlay{
 
 .rpf-drop-padding{
 	padding: 0px 10px;
+	/*padding: 0px;*/
+	/*padding-top: 10px;*/
+}
+
+.rm-cvr-cls{
+	min-width: 0;
+	height: 35px;
+	padding: 5px;
+	font-size: 12px;
+}
+.rm-cvr-itm-cls{
+	margin-right: 5px;
+}
+
+.frnd_menu{
+	min-width: 0;
+    height: 35px;
+    padding: 8px 5px;
+    font-size: 13px;
+}
+.sgupbck{
+	background-color: #FFF;
+	/*padding: 10px;*/
 }

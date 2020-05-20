@@ -22,12 +22,21 @@
 					<input id="cover_photo_file" type="file" name="cover_photo">
 				</div>
 				<div id='cover_loader'>
-					<img id="cover_loader" src="{% static 'components/cover_loader.gif' %}">
+					<img id="cover_loader_img" src="{% static 'components/cover_loader.gif' %}">
 				</div>
 				<div class="text-center" id='over-cover-img-disp-blc'>
-					<button id="cover-chng-btn" class="btn btn-sm btn-light">Change Cover</button>
+					{% if request.user.usercover.cover_photo == 'Cover_default.jpg' %}
+					<button id="cover-chng-btn" class="btn btn-sm btn-light">Upload Cover</button>
+					{% else %}
+					<div class="btn-group dropup" id='cover_blc_btn_sec'>
+						<button id="cover-chng-btn" class="btn btn-sm btn-light">Change Cover</button>
+						<button id="cover-chng-btn1" class="btn btn-sm btn-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+						<div class="dropdown-menu dropdown-menu-right rm-cvr-cls">
+							<a href="{% url 'del_cover' %}" id="cover-rem-btn" class="dropdown-item rm-cvr-itm-cls">Remove Cover</a>		
+						</div>
+					</div>
+					{% endif %}
 				</div>
-
 			</form>
 		</div>
 		<!-- Profile image -->

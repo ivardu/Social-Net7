@@ -243,8 +243,8 @@ $(document).ready(function(){
 
 // Cover photo change and display belongs to the Users App
 $(document).ready(function() {
-	$('#cover-chng-btn').click(function(e){
-		e.preventDefault();
+	$('#cover_photo_div').on('click','#cover-chng-btn',function(event){
+		event.preventDefault();
 		$('#cover_photo_file').click();
 	});
 });
@@ -280,7 +280,12 @@ $(document).ready(function(){
 			beforeSend: function(){$('#cover_loader').show();},
 			complete: function(){$('#cover_loader').hide();},
 			success: function() {
-				$('#cover-chng-btn').blur();
+				// console.log('calling or not..?');
+				console.log($('#cover-chng-btn').parents('#over-cover-img-disp-blc'));
+				$('#cover-chng-btn').parents('#over-cover-img-disp-blc').load('/static/fe.html #cover_blc_btn_sec', function(){
+					console.log('success');
+				});
+
 			},
 
 		});

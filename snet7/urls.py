@@ -50,7 +50,8 @@ urlpatterns = [
     path('pass_reset/complete', 
         PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html'), 
         name='password_reset_complete'),
-    path('cover_photo/', user_views.cover_photo, name='cover_pic')
+    path('cover_photo/', user_views.cover_photo, name='cover_pic'),
+    path('del_cover/',user_views.delete_coverphoto, name='del_cover'),
 ]
 
 if settings.DEBUG:

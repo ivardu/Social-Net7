@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST
 from users.forms import (SignUpForm, ProfileUpdateForm, UserUpdateForm, 
 	ProfileReadOnlyForm, UserReadOnlyForm, FriendsReqForm, 
 	FriendsAccpForm, CoverPhotoForm)
-from users.models import SnetUser, Friends
+from users.models import SnetUser, Friends, UserCover
 from feed.models import Feed
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import (PasswordChangeView, 
@@ -178,7 +178,7 @@ def friend_req_received(request):
 
 
 
-# Coverphoto handler
+# Coverphoto handler or change cover photo
 @login_required
 def cover_photo(request):
 	user = request.user
@@ -192,9 +192,29 @@ def cover_photo(request):
 			form_obj.save()
 			# print('am I success')
 			# print(form_obj.cover_photo)
-		else:
-			print(form.errors)
+			data = {'form':'success'}
+
+			return JsonResponse(data)
+		# else:
+		# 	print(form.errors)
+		# return HttpResponseRedirect(reverse('profile'))
+
+
+@login_required
+def delete_coverphoto(request):
+	cp = UserCover.objects.get(user=request.user)
+	if request.method == 'GET':
+		if cp:
+			cp.cover_photo = 'Cover_default.jpg' 
+			cp.save()
+			return HttpResponseRedirect(reverse('profile'))
+
+	else:
 		return HttpResponseRedirect(reverse('profile'))
+
+	
+
+
 
 
 @login_required
