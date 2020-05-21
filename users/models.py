@@ -63,13 +63,13 @@ class Profile(models.Model):
 	def __str__(self):
 		return f'{self.user.email} Profile'
 
-	def save(self, *args, **kwargs):
-		super().save()
-		img = Image.open(self.image.path)
-		if img.width < 50 or img.height < 50:
-			resize = (50,50)
-			image = img.resize(resize, Image.ANTIALIAS)
-			image.save(self.image.path)
+	# def save(self, *args, **kwargs):
+	# 	super().save()
+	# 	img = Image.open(self.image.path)
+	# 	if img.width < 50 or img.height < 50:
+	# 		resize = (50,50)
+	# 		image = img.resize(resize, Image.ANTIALIAS)
+	# 		image.save(self.image.path)
 
 	# def save(self, *args, **kwargs):
 	# 	super().save()
@@ -102,11 +102,11 @@ class UserCover(models.Model):
 	user = models.OneToOneField(SnetUser, on_delete=models.CASCADE)
 
 
-	def save(self, *args, **kwargs):
-		super().save()
-		img = Image.open(self.cover_photo.path)
+	# def save(self, *args, **kwargs):
+	# 	super().save()
+	# 	img = Image.open(self.cover_photo.path)
 
-		if (img.height < 462 or img.height > 462) and (img.width > 820 or img.width < 820):
-			standard_size = (820, 462)
-			image = img.resize(standard_size,Image.ANTIALIAS)
-			image.save(self.cover_photo.path)
+	# 	if (img.height < 462 or img.height > 462) and (img.width > 820 or img.width < 820):
+	# 		standard_size = (820, 462)
+	# 		image = img.resize(standard_size,Image.ANTIALIAS)
+	# 		image.save(self.cover_photo.path)

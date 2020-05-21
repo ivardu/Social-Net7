@@ -28,13 +28,13 @@ class Feed(models.Model):
 		super().save()
 		# print(self.image)
 
-		if self.image:
-			# print("Why I'm true")
-			img = Image.open(self.image.path)
-			if img.height < 400 or img.width < 400:
-				resize = (400, 400)
-				image = img.resize(resize, Image.ANTIALIAS)
-				image.save(self.image.path)
+		# if self.image:
+		# 	# print("Why I'm true")
+		# 	img = Image.open(self.image.path)
+		# 	if img.height < 400 or img.width < 400:
+		# 		resize = (400, 400)
+		# 		image = img.resize(resize, Image.ANTIALIAS)
+		# 		image.save(self.image.path)
 
 	def likes_count(self):
 		return self.likes_set.count()
