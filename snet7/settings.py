@@ -25,7 +25,7 @@ SECRET_KEY = ')$2aw#7(fg8urc%fp4l=teis4)g779#)gdx%a8do*+zyk#y2ro'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['tapala.herokuapp.com']
 
 
 # Application definition
