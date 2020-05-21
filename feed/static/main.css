@@ -446,3 +446,15 @@ div#profile-image-container:hover div#profile_overlay{
 .rpf-drop-padding{
 	padding: 0px 10px;
 }
+
+.cvr_drp_mnu,.drp-items{
+	min-width: 0;
+}
+.drp-items{
+	/*padding: 10px;*/
+	font-size: 13px;
+}
+
+#cover-chng-btn{
+	font-size: 12px;
+}
